@@ -28,7 +28,7 @@ const getStatusClass = (status: PedidoStatus) => {
         </p>
 
         <div v-else class="space-y-4">
-            <div v-for="pedido in pedidoStore.pedidosFiltrados" :key="pedido.id"
+            <div v-for="pedido in pedidoStore.pedidosFiltrados" :key="pedido.uuid"
                 class="p-4 bg-gray-700 rounded-lg shadow-md transition duration-150 hover:bg-gray-600">
                 <div class="flex justify-between items-start mb-2">
                     <p class="font-bold text-lg text-blue-300">{{ pedido.clienteNome }}</p>
