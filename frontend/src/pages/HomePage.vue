@@ -2,18 +2,18 @@
 import MetricsBar from '@/shared/components/home/MetricsBar.vue';
 import CalendarView from '@/shared/components/home/CalendarVue.vue';
 import DailyOrdersSidebar from '@/shared/components/home/DailyOrdersSideBar.vue';
-import CreateOrderModal from '@/shared/components/pedido/CreateOrderModal.vue';
+import CreateOrderModal from '@/shared/components/home/CreateOrderModal.vue';
 import { ref } from 'vue';
 
 const isModalOpen = ref(false);
 </script>
 
 <template>
-    <div>
+    <div class="w-[90%] m-auto">
         <MetricsBar />
 
         <div class="flex space-x-8">
-            <div class="w-1/2 flex-none">
+            <div class="w-2/3 flex-none">
                 <CalendarView />
             </div>
 

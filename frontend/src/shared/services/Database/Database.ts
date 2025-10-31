@@ -4,16 +4,16 @@ import type { Pedido } from "@/shared/types/pedido.type";
 import type { Metrica } from "@/shared/types/metrica.type";
 
 export class AppDB extends Dexie {
-    clientes!: Table<Cliente>;
-    pedidos!: Table<Pedido>;
-    metricas!: Table<Metrica>;
+    clientes!: Table<Cliente, string>;
+    pedidos!: Table<Pedido, string>;
+    metricas!: Table<Metrica, string>;
 
     constructor() {
         super('SistemaComandasLocalDB');
-        this.version(1).stores({
-            clientes: '++id, nome', 
-            pedidos: '++id, clienteId, dataEntrega, status, dataCriacao', 
-            metricas: '&mesAno', 
+        this.version(4).stores({ 
+            clientes: 'uuid, nome, *telefone', 
+            pedidos: 'uuid, clienteUuid, dataEntrega, status', 
+            metricas: 'mesAno',
         });
     }
 }

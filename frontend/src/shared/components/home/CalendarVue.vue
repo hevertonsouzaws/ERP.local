@@ -91,7 +91,7 @@ onMounted(() => {
         <div class="flex flex-wrap">
             <div v-for="i in primeiroDia" :key="`vazio-${i}`" class="w-[14.28%] h-16"></div>
             
-            <div v-for="dia in diasDoMes" :key="dia" class="w-[14.28%] h-16 flex justify-center items-center p-0.5">
+            <div v-for="dia in diasDoMes" :key="dia" class="w-[14.28%] h-[80px] flex justify-center items-center p-0.5">
                 <button
                     @click="selecionarDia(getDiaString(dia))"
                     :class="[

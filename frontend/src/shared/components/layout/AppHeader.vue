@@ -9,11 +9,14 @@
                     <router-link to="/">
                         <i class="fi fi-rr-house-chimney"></i>
                     </router-link>
-                    <router-link to="/cliente">
+                    <router-link to="/clientes">
                         <i class="fi fi-rr-user"></i>
                     </router-link>
                     <router-link to="/pedidos">
                         <i class="fi fi-rr-calendar-clock"></i>
+                    </router-link>
+                    <router-link to="/backup">
+                        <i class="fi fi-rr-rotate-right"></i>
                     </router-link>
                 </div>
             </div>
