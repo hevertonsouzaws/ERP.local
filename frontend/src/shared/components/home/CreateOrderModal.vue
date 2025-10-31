@@ -158,13 +158,13 @@ const salvarPedido = async () => {
                              max-h-full overflow-y-auto">
             <button @click="emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
                     class="fi fi-rr-cross text-xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-blue-400 border-b border-gray-700 pb-2">Novo Pedido</h2>
+            <h2 class="text-2xl font-bold mb-6 text-gray-200 border-b border-gray-700 pb-2">Novo Pedido</h2>
 
             <div class="flex space-x-6">
 
                 <div class="w-1/2 space-y-4 pr-3 border-r border-gray-700">
 
-                    <div class="p-4 bg-gray-700 rounded-lg">
+                    <div class="p-4 bg-gray-900 rounded-lg">
                         <h3 class="font-bold mb-3 flex items-center text-lg"><i class="fi fi-rr-user text-xl mr-2"></i>
                             Cliente</h3>
                         <div v-if="clienteSelecionado"
@@ -207,18 +207,18 @@ const salvarPedido = async () => {
 
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-sm font-medium text-gray-400">Descrição do Pedido</label>
+                            <label class="block text-sm font-medium text-gray-200">Descrição do Pedido</label>
                             <textarea v-model="novoPedido.descricao" rows="3"
-                                class="w-full p-2 bg-gray-700 border border-gray-600 rounded mt-1 text-sm"></textarea>
+                                class="w-full p-2 bg-gray-900 border border-gray-600 rounded mt-1 text-sm"></textarea>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-400">Data e Horário de Entrega</label>
+                            <label class="block text-sm font-medium text-gray-200">Data e Horário de Entrega</label>
                             <div class="flex space-x-2 mt-1">
                                 <input type="date" v-model="novoPedido.dataEntrega"
-                                    class="flex-1 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
+                                    class="flex-1 p-2 bg-gray-700 border border-gray-600 rounded text-sm cursor-pointer">
                                 <input type="time" v-model="novoPedido.horarioEntrega"
-                                    class="w-1/3 p-2 bg-gray-700 border border-gray-600 rounded text-sm">
+                                    class="w-1/3 p-2 bg-gray-700 border border-gray-600 rounded text-sm cursor-pointer">
                             </div>
                         </div>
                     </div>
@@ -226,24 +226,23 @@ const salvarPedido = async () => {
 
                 <div class="w-1/2 space-y-4">
 
-                    <div class="p-4 bg-gray-700 rounded-lg">
-                        <h3 class="font-bold mb-4 flex items-center justify-center text-lg text-green-600"><i
+                    <div class="p-4 bg-gray-900 rounded-lg">
+                        <h3 class="font-bold mb-4 flex items-center justify-left text-lg text-green-600"><i
                                 class="fi fi-rr-credit-card mr-2"></i>Pagamento</h3>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-200">Valor Total do Pedido (R$)</label>
                             <input type="number" v-model.number="novoPedido.valor" min="0" step="0.01"
-                                class="w-full p-3 text-xl bg-gray-900 border border-gray-600 rounded mt-1 text-white">
+                                class="w-full p-2 text-xl bg-gray-900 border border-gray-600 mt-1 text-white rounded-lg">
                         </div>
 
-                        <div class="mt-4 pt-3 border-t border-gray-600 flex justify-between">
+                        <div class="mt-4 pt-3 border-t border-gray-400 flex justify-between">
                             <div>
-                                <p class="text-sm font-medium text-gray-400">Total Pago:</p>
+                                <p class="text-sm font-medium text-gray-200">Total Pago:</p>
                                 <p class="text-3xl text-gray-200">R$ {{ valorTotalPago.toFixed(2) }}</p>
-
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-400">Falta Pagar:</p>
+                                <p class="text-sm font-medium text-gray-200">Falta Pagar:</p>
                                 <p class="text-3xl" :class="valorRestante > 0 ? 'text-red-500' : 'text-green-500'">
                                     R$ {{ valorRestante.toFixed(2) }}
                                 </p>
@@ -251,9 +250,9 @@ const salvarPedido = async () => {
                         </div>
                     </div>
 
-                    <div class="p-4 bg-gray-700 rounded-lg">
-                        <h3 class="font-bold mb-3 flex items-center text-lg text-green-300"><i
-                                class="fi fi-rr-money-bill-wave mr-2"></i> Registrar Pagamento</h3>
+                    <div class="p-4 bg-gray-900 rounded-lg">
+                        <h3 class="font-bold mb-3 flex items-center text-lg text-gray-200"><i
+                                class="fi fi-rr-money-bill-wave mr-2 text-green-400"></i> Registrar Pagamentos</h3>
 
                         <div class="flex space-x-2 mb-3">
                             <select v-model="novoPagamento.forma"
@@ -289,13 +288,15 @@ const salvarPedido = async () => {
                 </div>
             </div>
 
-            <button @click="salvarPedido" :disabled="!clienteSelecionado || novoPedido.valor <= 0"
-                class="w-full mt-6 py-3 rounded-lg font-semibold transition duration-150" :class="{
+            <div class="w-full text-center mt-10">
+                <button @click="salvarPedido" :disabled="!clienteSelecionado || novoPedido.valor <= 0"
+                class="w-80 py-3 rounded-lg font-semibold transition duration-150" :class="{
                     'bg-green-600 hover:bg-green-500': valorRestante <= 0 && clienteSelecionado,
                     'bg-blue-600 hover:bg-blue-500': valorRestante > 0 && clienteSelecionado,
                     'opacity-50 cursor-not-allowed': !clienteSelecionado || novoPedido.valor <= 0
                 }">
                 {{ valorRestante <= 0 ? 'SALVAR PEDIDO (QUITADO)' : 'SALVAR PEDIDO' }} </button>
+            </div>
                     <p v-if="!clienteSelecionado" class="text-xs text-red-400 text-center mt-2">Selecione um cliente e
                         defina o valor total para salvar.</p>
         </div>

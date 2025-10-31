@@ -107,7 +107,7 @@ const fecharModal = () => {
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative text-white max-h-[90vh] overflow-y-auto">
             <button @click="fecharModal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
                     class="fi fi-rr-cross text-xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-yellow-400 border-b border-gray-700 pb-2">
+            <h2 class="text-xl mb-6 text-gray-200 border-b border-gray-700 pb-2">
                 Receber Pagamento | Pedido #{{ pedido.uuid.substring(0, 8) }}
             </h2>
 
@@ -155,8 +155,8 @@ const fecharModal = () => {
                     <div v-for="(pag, index) in pagamentosAtuais" :key="index" 
                         class="flex justify-between items-center bg-gray-600 p-2 rounded text-sm">
                         <span class="font-medium">{{ pag.forma }}:</span>
-                        <span class="text-yellow-300 font-bold">R$ {{ pag.valor.toFixed(2) }}</span>
-                        <button @click="removerPagamento(index)" class="text-red-400 hover:text-red-300 transition">
+                        <span class="text-gray-200 font-bold">R$ {{ pag.valor.toFixed(2) }}</span>
+                        <button @click="removerPagamento(index)" class="text-red-400 hover:text-red-600 hover:scale-110 rounded-full hover:bg-black/50 p-1 transition">
                             <i class="fi fi-rr-trash text-xs"></i>
                         </button>
                     </div>

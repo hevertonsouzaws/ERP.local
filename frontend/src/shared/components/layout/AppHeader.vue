@@ -3,9 +3,11 @@
 
         <nav class="text-white">
             <div class="flex items-center justify-center gap-20 selection:">
-                <p class="font-allura-custom font-semibold text-3xl">NS Costuras</p>
-                <div class="border-l border-violet-600 h-10"></div>
                 <div class="text-xl flex gap-10">
+                    <router-link to="/">
+                       <p class="font-allura-custom font-semibold text-3xl">NS Costuras</p>
+                    </router-link>
+                    <div class="border-l border-violet-600 h-10"></div>
                     <router-link to="/">
                         <i class="fi fi-rr-house-chimney"></i>
                     </router-link>

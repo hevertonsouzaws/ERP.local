@@ -41,7 +41,7 @@ const salvarNovoCliente = async () => {
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md relative text-white">
             <button @click="emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
                     class="fi fi-rr-cross text-xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-green-400 border-b border-gray-700 pb-2">
+            <h2 class="text-xl font-semibold mb-6 text-green-400 border-b border-gray-700 pb-2">
                 Adicionar Novo Cliente
             </h2>
 

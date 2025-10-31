@@ -97,7 +97,7 @@ const handleImportarPedidos = async (event: Event) => {
                 <i class="fi fi-rr-cloud-download text-4xl mr-3"></i>Backup e Restauração
             </h1>
 
-            <div class="text-lg text-white mb-8 flex items-center bg-green-900 rounded-xl py-0 p-2 w-[44%] ">
+            <div class="text-base text-white mb-8 flex items-center bg-green-900 rounded-xl py-0 p-2 w-[50%] ">
                 <i class="fi fi-rr-info text-2xl mr-3 mt-1"></i>Esta área foi criada para evitar a perda de dados do
                 nosso
                 sistema.

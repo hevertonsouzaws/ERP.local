@@ -12,20 +12,20 @@ const isModalOpen = ref(false);
     <div class="min-w-full m-auto">
         <MetricsBar />
 
-        <div class="flex justify-between gap-10 flex-wrap">
-            <div class="min-w-[55%]">
+        <div class="flex flex-wrap justify-between gap-6">
+
+            <div class="w-full lg:w-[calc(65%-1.5rem)]">
                 <CalendarView />
             </div>
 
-            <div class="min-w-[30%]">
+            <div class="w-full lg:w-[calc(35%-1.5rem)]">
                 <DailyOrdersSidebar />
             </div>
+
         </div>
 
-        <button 
-            @click="isModalOpen = true"
-            class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20"
-        >
+        <button @click="isModalOpen = true"
+            class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
             <i class="fi fi-rr-plus"></i>
         </button>
 
