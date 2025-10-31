@@ -9,15 +9,15 @@ const isModalOpen = ref(false);
 </script>
 
 <template>
-    <div class="w-[90%] m-auto">
+    <div class="min-w-full m-auto">
         <MetricsBar />
 
-        <div class="flex space-x-8">
-            <div class="w-2/3 flex-none">
+        <div class="flex justify-between gap-10 flex-wrap">
+            <div class="min-w-[55%]">
                 <CalendarView />
             </div>
 
-            <div class="flex-1">
+            <div class="min-w-[30%]">
                 <DailyOrdersSidebar />
             </div>
         </div>
