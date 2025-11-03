@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Pedido, PedidoStatus } from '@/shared/types/pedido.type';
+import type { Pedido, PedidoStatus, PedidoItemPeca } from '@/shared/types/pedido.type';
+import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
 import { computed } from 'vue';
 
@@ -9,6 +10,8 @@ const props = defineProps<{
 
 const emit = defineEmits(['change-status', 'open-payment-modal']);
 
+const pedidoStore = usePedidoStore();
+
 const getStatusClass = (status: PedidoStatus) => {
     switch (status) {
         case 'PENDENTE': return 'border-2 border-yellow-400 text-yellow-200 bg-yellow-900/20';
@@ -17,14 +20,33 @@ const getStatusClass = (status: PedidoStatus) => {
     }
 }
 
-const valorRestante = computed(() => props.pedido.valor - props.pedido.valorPago);
+const valorTotal = computed(() => pedidoStore.getValorTotalPedido(props.pedido));
+
+const valorRestante = computed(() => valorTotal.value - props.pedido.valorPago);
 
 const emitirMudarStatus = (novoStatus: PedidoStatus) => {
-    emit('change-status', props.pedido, novoStatus);
+    emit('change-status', props.pedido, novoStatus, valorTotal.value);
 }
 
 const emitirAbrirPagamento = () => {
-    emit('open-payment-modal', props.pedido);
+    emit('open-payment-modal', props.pedido, valorTotal.value);
+}
+
+const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
+    const linhas: string[] = [];
+    itens.forEach(peca => {
+        linhas.push(`${peca.lineNumber}. ${peca.garmentName.toUpperCase()}`);
+        
+        peca.servicos.forEach(servico => {
+            const precoFormatado = servico.unitPrice.toFixed(2).replace('.', ',');
+            linhas.push(`    ${servico.quantidade}x ${servico.name} (R$ ${precoFormatado})`);
+        });
+    });
+    
+    if (linhas.length === 0) {
+        linhas.push('Nenhum item adicionado ao pedido.');
+    }
+    return linhas;
 }
 </script>
 
@@ -47,7 +69,8 @@ const emitirAbrirPagamento = () => {
                 <p class="font-semibold text-base">{{ formatarDataParaExibicao(pedido.dataEntrega) }} <span v-if="pedido.horarioEntrega">({{ pedido.horarioEntrega }})</span></p>
             </div>
             <div class="text-right">
-                <p class="font-bold text-base text-white">Total: R$ {{ pedido.valor.toFixed(2) }}</p>
+                <p class="font-bold text-base text-white">Total: R$ {{ valorTotal.toFixed(2) }}</p>
+                
                 <p class="text-sm font-semibold" 
                     :class="valorRestante <= 0 ? 'text-green-400' : 'text-red-400'">
                     Pago: R$ {{ pedido.valorPago.toFixed(2) }}
@@ -55,8 +78,10 @@ const emitirAbrirPagamento = () => {
             </div>
         </div>
         
-        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3">
-            <p class="text-gray-300 text-sm italic">{{ pedido.descricao }}</p>
+        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3 bg-gray-700/50 text-gray-300 text-sm italic font-mono">
+            <p v-for="(linha, index) in formatarItensParaExibicao(pedido.itens)" :key="index">
+                {{ linha }}
+            </p>
         </div>
 
         <div class="pt-2 flex justify-end gap-2">

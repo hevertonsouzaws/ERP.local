@@ -14,7 +14,8 @@ const pedidoStore = usePedidoStore();
 const formasDisponiveis: FormaPagamento[] = ['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO', 'OUTRO'];
 
 const pagamentosAtuais = ref<PagamentoRegistro[]>([]);
-const valorTotalPedido = ref(0);
+// O valor total será calculado no watch/computed
+const valorTotalPedido = ref(0); 
 const valorPagoAnterior = ref(0);
 
 const novoPagamento = ref({
@@ -35,10 +36,15 @@ const podeQuitar = computed(() => valorRestante.value <= 0);
 
 watch(() => props.pedido, (novoPedido) => {
     if (novoPedido) {
-        valorTotalPedido.value = novoPedido.valor;
+        // NOVO: Calcula o valor total usando o getter da Store
+        const totalCalculado = pedidoStore.getValorTotalPedido(novoPedido);
+        
+        valorTotalPedido.value = totalCalculado;
         valorPagoAnterior.value = novoPedido.valorPago;
         pagamentosAtuais.value = [];
-        novoPagamento.value.valor = Math.max(0, novoPedido.valor - novoPedido.valorPago);
+        
+        // Define o valor sugerido para pagamento como o restante
+        novoPagamento.value.valor = Math.max(0, totalCalculado - novoPedido.valorPago);
     }
 }, { immediate: true });
 
@@ -56,6 +62,7 @@ const adicionarPagamento = () => {
         timestamp: Date.now(),
     });
     
+    // Atualiza o valor sugerido para o restante do pagamento
     novoPagamento.value.valor = valorRestante.value;
 };
 
@@ -70,8 +77,7 @@ const salvarPagamento = async () => {
         return;
     }
 
-    // AQUI: Usando 'uuid' em vez de 'id'
-    const { uuid, status } = props.pedido; 
+    const { uuid } = props.pedido; 
 
     const novosPagamentos = props.pedido.pagamentos.concat(pagamentosAtuais.value);
     const novoValorPago = valorTotalPago.value;
@@ -80,11 +86,11 @@ const salvarPagamento = async () => {
     
     try {
         await pedidoStore.registrarNovoPagamento(
-            uuid, // MUDANÇA: Passando o UUID (string)
+            uuid,
             novosPagamentos,
             novoValorPago,
-            novoStatus,
-            props.pedido.valor
+            novoStatus
+            // REMOVIDO: O valor do pedido não precisa ser passado, a Store o calcula internamente agora.
         );
         
         alert(`Pagamento(s) registrado(s) com sucesso. Novo Status: ${novoStatus}.`);
@@ -106,7 +112,7 @@ const fecharModal = () => {
         
         <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative text-white max-h-[90vh] overflow-y-auto">
             <button @click="fecharModal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
-                    class="fi fi-rr-cross text-xl"></i></button>
+                        class="fi fi-rr-cross text-xl"></i></button>
             <h2 class="text-xl mb-6 text-gray-200 border-b border-gray-700 pb-2">
                 Receber Pagamento | Pedido #{{ pedido.uuid.substring(0, 8) }}
             </h2>
@@ -123,13 +129,13 @@ const fecharModal = () => {
             </div>
 
             <div class="mb-6 p-4 rounded-lg" :class="podeQuitar ? 'bg-green-900/40' : 'bg-red-900/40'">
-                   <p class="text-lg font-medium text-gray-200">Total Pago Anteriormente:</p>
-                   <p class="text-xl font-extrabold text-blue-400">R$ {{ valorPagoAnterior.toFixed(2) }}</p>
+                       <p class="text-lg font-medium text-gray-200">Total Pago Anteriormente:</p>
+                       <p class="text-xl font-extrabold text-blue-400">R$ {{ valorPagoAnterior.toFixed(2) }}</p>
 
-                   <p class="text-lg font-medium text-gray-200 mt-3">Valor Pendente:</p>
-                   <p class="text-3xl font-extrabold" :class="valorRestante > 0 ? 'text-red-400' : 'text-green-400'">
-                       R$ {{ valorRestante.toFixed(2) }}
-                   </p>
+                       <p class="text-lg font-medium text-gray-200 mt-3">Valor Pendente:</p>
+                       <p class="text-3xl font-extrabold" :class="valorRestante > 0 ? 'text-red-400' : 'text-green-400'">
+                           R$ {{ valorRestante.toFixed(2) }}
+                       </p>
             </div>
             
             <div class="p-4 bg-gray-700 rounded-lg mb-6">
@@ -144,7 +150,7 @@ const fecharModal = () => {
                         placeholder="Valor a Pagar"
                         class="w-2/5 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
                     
-                    <button @click="adicionarPagamento" :disabled="novoPagamento.valor <= 0 || valorRestante < 0"
+                    <button @click="adicionarPagamento" :disabled="novoPagamento.valor <= 0"
                         class="w-1/4 bg-green-600 p-2 rounded text-sm hover:bg-green-500 disabled:opacity-50 transition">
                         <i class="fi fi-rr-plus"></i>
                     </button>

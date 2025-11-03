@@ -1,10 +1,19 @@
 import { defineStore } from "pinia";
 import { ref, toRaw, computed } from "vue";
 import { db } from "../services/Database/Database";
-import type { Pedido, PedidoStatus, PagamentoRegistro } from "../types/pedido.type";
+import type { Pedido, PedidoStatus, PagamentoRegistro, PedidoItemPeca } from "../types/pedido.type";
 import type { Metrica } from "../types/metrica.type";
 import { getMesAnoAtual, getDataHojeString } from "@/shared/helpers/data.helper";
 import { generateUUID } from "../helpers/uuid.helper";
+
+function calcularValorTotalPedido(pedido: Pedido): number {
+    return pedido.itens.reduce((totalPeca, peca: PedidoItemPeca) => {
+        const subtotalPeca = peca.servicos.reduce((subtotalServico, servico) => {
+            return subtotalServico + (servico.quantidade * servico.unitPrice);
+        }, 0);
+        return totalPeca + subtotalPeca;
+    }, 0);
+}
 
 export const usePedidoStore = defineStore('pedidos', () => {
     const pedidos = ref<Pedido[]>([]);
@@ -17,6 +26,8 @@ export const usePedidoStore = defineStore('pedidos', () => {
             .filter(p => p.dataEntrega === dataSelecionada.value)
             .sort((a, b) => (a.horarioEntrega || '').localeCompare(b.horarioEntrega || ''));
     });
+
+    const getValorTotalPedido = (pedido: Pedido) => calcularValorTotalPedido(pedido);
 
     async function carregarPedidos() {
         try {
@@ -35,10 +46,11 @@ export const usePedidoStore = defineStore('pedidos', () => {
         let totalCancelados = 0;
 
         for (const pedido of pedidos.value) {
+            const valorTotal = calcularValorTotalPedido(pedido);
             
             receitaTotal += pedido.valorPago;
             
-            const restante = pedido.valor - pedido.valorPago;
+            const restante = valorTotal - pedido.valorPago;
             if (restante > 0 && pedido.status !== 'CANCELADO') {
                 valorPendente += restante;
             }
@@ -46,7 +58,7 @@ export const usePedidoStore = defineStore('pedidos', () => {
             const dataPedidoMesAno = pedido.dataCriacao.substring(0, 7);
 
             if (dataPedidoMesAno === mesAnoAtual) {
-                 if (pedido.status === 'CONCLUIDO') {
+                if (pedido.status === 'CONCLUIDO') {
                     totalFinalizados += 1;
                 } else if (pedido.status === 'CANCELADO') {
                     totalCancelados += 1;
@@ -54,13 +66,11 @@ export const usePedidoStore = defineStore('pedidos', () => {
             }
         }
 
-        // LEITURA: Leva apenas os dados persistentes (valorFaturado) do Dexie.
         const metricasDB = await db.metricas.get(mesAnoAtual) || {
             mesAno: mesAnoAtual,
             totalFinalizados: 0, totalCancelados: 0, valorFaturado: 0, valorPendente: 0, receitaTotal: 0
         };
 
-        // ATUALIZAÇÃO DO PINIA (Memória): Mescla os valores persistentes com os valores dinâmicos calculados.
         metricasAtuais.value = {
             ...metricasDB,
             receitaTotal: receitaTotal,
@@ -68,9 +78,6 @@ export const usePedidoStore = defineStore('pedidos', () => {
             totalFinalizados: totalFinalizados,
             totalCancelados: totalCancelados,
         };
-        
-        // REMOVIDO: await db.metricas.put(metricasAtuais.value); 
-        // A persistência só deve ocorrer em funções que alteram o status/pagamento.
     }
     
     async function carregarMetricasAtuais() {
@@ -98,7 +105,6 @@ export const usePedidoStore = defineStore('pedidos', () => {
         }
     }
 
-    // Esta função PERSISTE APENAS os dados mensais (totalFinalizados e valorFaturado)
     async function atualizarMetricasAposConclusao(valorPedido: number) {
         const mesAno = getMesAnoAtual();
         const metricas = await db.metricas.get(mesAno) || {
@@ -110,15 +116,19 @@ export const usePedidoStore = defineStore('pedidos', () => {
             receitaTotal: 0,
         };
 
-        metricas.totalFinalizados += 1; // Adicionado de volta aqui, pois esta é a lógica de persistência
+        metricas.totalFinalizados += 1;
         metricas.valorFaturado += valorPedido;
 
         await db.metricas.put(metricas);
     }
 
-    async function atualizarStatusPedido(pedidoUuid: string, novoStatus: PedidoStatus, valorPedido: number) {
+    async function atualizarStatusPedido(pedidoUuid: string, novoStatus: PedidoStatus) {
         try {
-            // 1. Atualiza o status no Dexie (await garante que a operação termine)
+            const pedido = pedidos.value.find(p => p.uuid === pedidoUuid);
+            if (!pedido) return;
+
+            const valorPedido = calcularValorTotalPedido(pedido);
+
             await db.pedidos.update(pedidoUuid, { status: novoStatus });
 
             const pedidoIndex = pedidos.value.findIndex(p => p.uuid === pedidoUuid);
@@ -126,16 +136,13 @@ export const usePedidoStore = defineStore('pedidos', () => {
             if (pedidoIndex !== -1) {
                 const statusMudouParaConcluido = (pedidos.value[pedidoIndex].status !== 'CONCLUIDO' && novoStatus === 'CONCLUIDO');
                 
-                // 2. Atualiza o status na memória (Pinia)
                 pedidos.value[pedidoIndex].status = novoStatus; 
 
-                // 3. Persiste métricas MENSAIS (se aplicável)
                 if (statusMudouParaConcluido) {
                     await atualizarMetricasAposConclusao(valorPedido);
                 }
             }
 
-            // 4. Recalcula métricas GERAIS (receita total e pendente) com base na memória atualizada
             await calcularMetricasGerais();
 
         } catch (error) {
@@ -147,13 +154,15 @@ export const usePedidoStore = defineStore('pedidos', () => {
         pedidoUuid: string,
         pagamentos: PagamentoRegistro[],
         valorPago: number,
-        novoStatus: PedidoStatus,
-        valorPedido: number
+        novoStatus: PedidoStatus
     ) {
         try {
+            const pedido = pedidos.value.find(p => p.uuid === pedidoUuid);
+            if (!pedido) return;
+
+            const valorPedido = calcularValorTotalPedido(pedido);
             const pagamentosPlano = JSON.parse(JSON.stringify(pagamentos));
 
-            // 1. Atualiza o pedido no Dexie (await garante que a operação termine)
             await db.pedidos.update(pedidoUuid, {
                 pagamentos: pagamentosPlano,
                 valorPago: valorPago,
@@ -165,7 +174,6 @@ export const usePedidoStore = defineStore('pedidos', () => {
             if (pedidoIndex !== -1) {
                 const statusMudouParaConcluido = (pedidos.value[pedidoIndex].status !== 'CONCLUIDO' && novoStatus === 'CONCLUIDO');
                 
-                // 2. Atualiza o pedido na memória (Pinia)
                 pedidos.value[pedidoIndex] = {
                     ...pedidos.value[pedidoIndex],
                     pagamentos: pagamentosPlano,
@@ -173,13 +181,11 @@ export const usePedidoStore = defineStore('pedidos', () => {
                     status: novoStatus
                 };
 
-                // 3. Persiste métricas MENSAIS (se aplicável)
                 if (statusMudouParaConcluido) {
                     await atualizarMetricasAposConclusao(valorPedido);
                 }
             }
 
-            // 4. Recalcula métricas GERAIS com base na memória atualizada
             await calcularMetricasGerais(); 
 
         } catch (error) {
@@ -198,6 +204,7 @@ export const usePedidoStore = defineStore('pedidos', () => {
         metricasAtuais,
         dataSelecionada,
         pedidosFiltrados,
+        getValorTotalPedido,
         carregarPedidos,
         carregarMetricasAtuais,
         adicionarPedido,

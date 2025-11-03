@@ -38,12 +38,12 @@ const getStatusClass = (status: PedidoStatus) => {
                     </span>
                 </div>
                 <div class="flex gap-5">
-                    <p class="text-sm text-gray-300"><span class="font-medium">Valor:</span> R$ {{
-                        pedido.valor.toFixed(2) }}</p>
+                    <p class="text-sm text-gray-300"><span class="font-medium">Pago:</span> R$ {{
+                        pedido.valorPago.toFixed(2) }}</p>
+                    
                     <p v-if="pedido.horarioEntrega" class="text-sm text-gray-300 mb-2"><span
-                            class="font-medium">Entrega:</span> {{ pedido.horarioEntrega }}</p>
+                            class="font-medium">Entrega:</span> {{ formatarDataParaExibicao(pedido.dataEntrega) }}</p>
                 </div>
-                <p class="text-xs text-gray-400 truncate">{{ pedido.descricao }}</p>
             </div>
         </div>
     </div>

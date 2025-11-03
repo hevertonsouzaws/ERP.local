@@ -26,21 +26,27 @@ const pedidosFiltrados = computed(() => {
     return list.sort((a, b) => a.dataEntrega.localeCompare(b.dataEntrega));
 });
 
-const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus) => {
+// A função mudou para receber o valorTotal calculado
+const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus, valorTotal: number) => {
     if (pedido.status === novoStatus) return;
 
-    if (novoStatus === 'CONCLUIDO' && pedido.valorPago < pedido.valor) {
-        if (!confirm(`O pedido ${pedido.uuid} ainda tem R$ ${(pedido.valor - pedido.valorPago).toFixed(2)} pendentes. Deseja marcar como CONCLUÍDO mesmo assim?`)) {
+    const valorRestante = valorTotal - pedido.valorPago;
+
+    // NOVO: Usa valorTotal calculado
+    if (novoStatus === 'CONCLUIDO' && valorRestante > 0) {
+        if (!confirm(`O pedido ${pedido.uuid.substring(0, 8)} ainda tem R$ ${valorRestante.toFixed(2)} pendentes. Deseja marcar como CONCLUÍDO mesmo assim?`)) {
             return;
         }
     }
 
-    if (confirm(`Deseja realmente mudar o status do pedido ${pedido.uuid} para ${novoStatus}?`)) {
-        await store.atualizarStatusPedido(pedido.uuid, novoStatus, pedido.valor);
+    if (confirm(`Deseja realmente mudar o status do pedido ${pedido.uuid.substring(0, 8)} para ${novoStatus}?`)) {
+        // NOVO: O valor do pedido não precisa mais ser passado, pois a Store o calcula internamente
+        await store.atualizarStatusPedido(pedido.uuid, novoStatus); 
         alert(`Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`);
     }
 }
 
+// A função foi ligeiramente simplificada para não precisar passar o valorTotal
 const abrirModalPagamento = (pedido: Pedido) => {
     pedidoSelecionado.value = pedido;
     mostrarModalPagamento.value = true;

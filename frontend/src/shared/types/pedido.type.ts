@@ -3,10 +3,27 @@ export type FormaPagamento = 'PIX' | 'DEBITO' | 'CREDITO' | 'DINHEIRO' | 'OUTRO'
 export interface PagamentoRegistro {
     forma: FormaPagamento;
     valor: number;
-    timestamp: number; // registro de quanod o pagemnto foi feito 
+    timestamp: number; 
 }
 
 export type PedidoStatus = 'PENDENTE' | 'CONCLUIDO' | 'CANCELADO'
+
+export interface PedidoItemServico {
+    uuid: string;         
+    serviceId: string;    
+    name: string;          
+    quantidade: number;    
+    unitPrice: number;    
+}
+
+export interface PedidoItemPeca {
+    uuid: string;         
+    garmentTypeId: string;
+    garmentName: string;   
+    lineNumber: number;    
+    servicos: PedidoItemServico[]; 
+}
+
 
 export interface Pedido {
     uuid: string;
@@ -14,10 +31,9 @@ export interface Pedido {
     clienteNome: string;
     dataEntrega: string;
     horarioEntrega?: string;
-    descricao: string;
-    valor: number;
+    itens: PedidoItemPeca[]; 
     status: PedidoStatus;
     dataCriacao: string;
     pagamentos: PagamentoRegistro[];
-    valorPago: number;
+    valorPago: number; 
 }

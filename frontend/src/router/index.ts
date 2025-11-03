@@ -1,11 +1,12 @@
-import { createRouter, createWebHashHistory } from 'vue-router'; // MUDANÇA AQUI: de createWebHistory para createWebHashHistory
+import { createRouter, createWebHashHistory } from 'vue-router'; 
 import Home from '@/pages/HomePage.vue';
 import ClientePage from '@/pages/ClientePage.vue';
 import PedidosPage from '@/pages/PedidosPage.vue';
 import BackupPage from '@/pages/BackupPage.vue';
+import Printer from '@/pages/Printer.vue';
+import ServiceCatologPage from '@/pages/ServiceCatologPage.vue';
 
 const router = createRouter({
-  // MUDANÇA AQUI: Agora usando createWebHashHistory()
   history: createWebHashHistory(), 
   routes: [
     {
@@ -24,9 +25,19 @@ const router = createRouter({
       component: PedidosPage,
     },
     {
+      path: '/catalogo',
+      name: 'catalogo',
+      component: ServiceCatologPage,
+    },
+    {
       path: '/backup',
       name: 'backup',
       component: BackupPage,
+    },
+    {
+      path: '/print',
+      name: 'print',
+      component: Printer,
     },
   ],
 });

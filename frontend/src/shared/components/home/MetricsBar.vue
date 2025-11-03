@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useClienteStore } from '@/shared/stores/cliente.store';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatCurrency } from '@/shared/helpers/format.helper';
