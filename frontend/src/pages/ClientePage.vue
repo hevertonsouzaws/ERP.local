@@ -48,13 +48,13 @@ const handleClienteAdicionado = () => {
 <template>
     <div class="min-h-screen text-white py-2 p-8 w-full">
         <div class="mb-6 flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-xl">
-            <h1 class="text-2xl font-bold text-blue-400">Gerenciamento de Clientes</h1>
+            <h1 class="text-2xl font-bold text-white">Gerenciamento de Clientes</h1>
             
             <div class="flex items-center space-x-4">
                 <p class="text-xl font-semibold">Total: {{ store.clientes.length }}</p>
                 <button 
                     @click="abrirModalAdicionar" 
-                    class="py-2 px-4 bg-green-600 rounded-lg text-white font-semibold hover:bg-green-500 transition flex items-center"
+                    class="py-2 px-4 bg-green-600 rounded-lg text-white font-semibold hover:bg-green-700 transition flex items-center"
                 >
                     <i class="fi fi-rr-user-add mr-2"></i> Adicionar Cliente
                 </button>

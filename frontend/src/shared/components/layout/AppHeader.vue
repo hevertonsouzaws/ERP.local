@@ -1,13 +1,12 @@
 <template>
-    <header class="bg-gray-900 border-b border-violet-600 top-0 z-50 p-8">
+    <header class="bg-gray-950 border-b border-violet-600 top-0 z-50 p-6">
 
         <nav class="text-white">
-            <div class="flex items-center justify-center gap-20 selection:">
+            <div class="flex flex-col items-center justify-center gap-10 md:flex-row">
+                <router-link to="/">
+                    <p class="font-allura-custom font-semibold text-3xl">NS Costuras</p>
+                </router-link>
                 <div class="text-xl flex gap-10">
-                    <router-link to="/">
-                       <p class="font-allura-custom font-semibold text-3xl">NS Costuras</p>
-                    </router-link>
-                    <div class="border-l border-violet-600 h-10"></div>
                     <router-link to="/">
                         <i class="fi fi-rr-house-chimney"></i>
                     </router-link>

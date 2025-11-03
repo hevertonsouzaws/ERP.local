@@ -30,7 +30,7 @@ const emitirAbrirPagamento = () => {
 
 <template>
     <div 
-        class="p-5 bg-gray-700 rounded-lg shadow-md transition duration-150 w-[32%] h-auto"
+        class="p-5 bg-gray-800 rounded-lg shadow-md transition duration-150 min-w-[32.5%]"
     >
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">

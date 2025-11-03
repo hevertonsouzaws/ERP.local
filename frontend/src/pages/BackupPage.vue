@@ -91,7 +91,7 @@ const handleImportarPedidos = async (event: Event) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-900 text-white p-8 max-w-[80%] m-auto">
+    <div class="bg-gray-800 text-white p-8 w-full m-auto rounded-lg mt-10">
         <div class="flex justify-between border-b border-gray-700 mb-5">
             <h1 class="text-3xl font-extrabold text-white mb-8 flex items-center">
                 <i class="fi fi-rr-cloud-download text-4xl mr-3"></i>Backup e Restauração
@@ -110,7 +110,7 @@ const handleImportarPedidos = async (event: Event) => {
             primeiro, o arquivo de clientes e depois o arquivo de pedidos.
         </p>
 
-        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl space-y-8">
+        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl space-y-8 border border-green-800">
 
             <div class="flex space-x-4">
                 <div class="border border-gray-700 p-6 rounded-lg w-1/2">
