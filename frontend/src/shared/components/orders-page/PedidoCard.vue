@@ -52,14 +52,14 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
 <template>
     <div 
-        class="p-5 bg-gray-800 rounded-lg shadow-md transition duration-150 min-w-[32.5%]"
+        class="w-full p-5 bg-gray-800 rounded-lg shadow-md transition duration-150 xl:w-[32.5%] lg:w-[48.5%] md:w-full"
     >
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">
-                <i class="fi fi-rr-user text-blue-400 mr-2"></i>
-                <p class="font-semibold text-base text-white">{{ pedido.clienteNome }}</p>
+                <i class="fi fi-rr-user text-purple-400 mr-2 text-xl"></i>
+                <p class="font-semibold text-sm text-white">{{ pedido.clienteNome }}</p>
             </div>
-            <span :class="['text-xs font-semibold py-0.5 px-2 rounded-full uppercase', getStatusClass(pedido.status)]">
+            <span :class="['text-xs py-0.5 px-2 rounded-full uppercase', getStatusClass(pedido.status)]">
                 {{ pedido.status }}
             </span>
         </div>

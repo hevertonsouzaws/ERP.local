@@ -91,56 +91,59 @@ const handleImportarPedidos = async (event: Event) => {
 </script>
 
 <template>
-    <div class="bg-gray-800 text-white p-8 w-full m-auto rounded-lg mt-10">
-        <div class="flex justify-between border-b border-gray-700 mb-5">
-            <h1 class="text-3xl font-extrabold text-white mb-8 flex items-center">
-                <i class="fi fi-rr-cloud-download text-4xl mr-3"></i>Backup e Restauração
+    <div class="text-white p-8 w-full lg:max-w-7xl m-auto rounded-lg mt-5">
+        <div class="flex flex-col items-center justify-between border-gray-700 mb-5 bg-gray-800 p-5 rounded-lg w-full">
+            <h1 class="text-2xl mb-4 flex items-center">
+                <i class="fi fi-rr-cloud text-3xl mr-3"></i>Backup e Restauração
             </h1>
 
-            <div class="text-base text-white mb-8 flex items-center bg-green-900 rounded-xl py-0 p-2 w-[50%] ">
-                <i class="fi fi-rr-info text-2xl mr-3 mt-1"></i>Esta área foi criada para evitar a perda de dados do
-                nosso
-                sistema.
+            <div class="text-base mb-8 bg-green-900 rounded-xl w-full xl:w-[50%]">
+                <h1 class="p-2 flex items-center justify-center">
+                    <i class="fi fi-rr-info text-2xl mr-3"></i>
+                    Esta área foi criada para evitar a perda de dados do nosso sistema.
+                </h1>
             </div>
+            <p class="text-gray-200 text-base">
+                Como fazer: 1° ao final do dia clique em <span class="text-purple-400">"Baixar Clientes"</span>, 2°
+                Clique
+                em <span class="text-yellow-400">"Baixar Pedidos"</span> isso irá gerar dois arquivos. Após isso importe
+                e
+                restaure
+                primeiro, o arquivo de clientes e depois o arquivo de pedidos.
+            </p>
+
         </div>
-        <p class="text-gray-200 text-lg mb-6 border-b border-gray-700 pb-4">
-            Como fazer: 1° ao final do dia clique em <span class="text-purple-400">"Baixar Clientes"</span> | 2° Clique
-            em <span class="text-yellow-400">"Baixar Pedidos"</span> isso irá gerar dois arquivos. Após gerar importe e
-            restaure
-            primeiro, o arquivo de clientes e depois o arquivo de pedidos.
-        </p>
 
-        <div class="bg-gray-800 p-6 rounded-xl shadow-2xl space-y-8 border border-green-800">
-
+        <div class=" p-6 rounded-xl shadow-2xl space-y-8 border">
             <div class="flex space-x-4">
-                <div class="border border-gray-700 p-6 rounded-lg w-1/2">
+                <div class="p-6 rounded-lg w-1/2 bg-gray-800">
                     <h2 class="text-xl font-bold mb-4 flex items-center text-gray-200"><i
                             class="fi fi-rr-download mr-2"></i> Exportar Clientes</h2>
                     <button @click="handleExportarClientes" :disabled="isLoading"
-                        class="w-full py-2 bg-purple-600 rounded-lg font-semibold transition hover:bg-blue-500 disabled:opacity-50">
+                        class="w-full py-2 bg-purple-600 rounded-lg font-semibold transition hover:bg-purple-700 disabled:opacity-50">
                         Baixar Clientes
                     </button>
                 </div>
-                <div class="border border-gray-700 p-6 rounded-lg w-1/2">
+                <div class="p-6 rounded-lg w-1/2 bg-gray-800">
                     <h2 class="text-xl font-bold mb-4 flex items-center text-gray-200"><i
                             class="fi fi-rr-download mr-2"></i> Exportar Pedidos</h2>
                     <button @click="handleExportarPedidos" :disabled="isLoading"
-                        class="w-full py-2 bg-yellow-600 rounded-lg font-semibold transition hover:bg-blue-500 disabled:opacity-50">
+                        class="w-full py-2 bg-yellow-600 rounded-lg font-semibold transition hover:bg-yellow-700 disabled:opacity-50">
                         Baixar Pedidos
                     </button>
                 </div>
             </div>
 
             <div class="flex space-x-4">
-                <div class="border border-purple-700 p-6 rounded-lg w-1/2">
+                <div class="p-6 rounded-lg flex justify-center items-center w-full bg-gray-800">
                     <h2 class="text-xl font-bold mb-4 flex items-center text-gray-200"><i
-                            class="fi fi-rr-upload mr-2"></i> 1. Importar Clientes</h2>
+                            class="fi fi-rr-upload mr-2"></i> 1.Importar Clientes</h2>
                     <input type="file" accept=".json" @change="handleImportarClientes" :disabled="isLoading"
                         class="block w-full text-sm text-white file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-800 file:text-white hover:file:bg-green-600 disabled:opacity-50 cursor-pointer">
                 </div>
-                <div class="border border-yellow-700 p-6 rounded-lg w-1/2">
+                <div class="p-6 rounded-lg flex justify-center items-center w-full bg-gray-800">
                     <h2 class="text-xl font-bold mb-4 flex items-center text-gray-200"><i
-                            class="fi fi-rr-upload mr-2"></i> 2. Importar Pedidos</h2>
+                            class="fi fi-rr-upload mr-2"></i> 2.Importar Pedidos</h2>
                     <input type="file" accept=".json" @change="handleImportarPedidos" :disabled="isLoading"
                         class="block w-full text-sm text-white file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-800 file:text-white hover:file:bg-green-600 disabled:opacity-50 cursor-pointer">
                 </div>
