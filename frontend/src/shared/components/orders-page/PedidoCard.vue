@@ -35,11 +35,11 @@ const emitirAbrirPagamento = () => {
 const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
     const linhas: string[] = [];
     itens.forEach(peca => {
-        linhas.push(`${peca.lineNumber}. ${peca.garmentName.toUpperCase()}`);
+        linhas.push(`${peca.lineNumber}.${peca.garmentName.toUpperCase()}`);
         
         peca.servicos.forEach(servico => {
             const precoFormatado = servico.unitPrice.toFixed(2).replace('.', ',');
-            linhas.push(`    ${servico.quantidade}x ${servico.name} (R$ ${precoFormatado})`);
+            linhas.push(`- ${servico.quantidade}x ${servico.name} (R$ ${precoFormatado})`);
         });
     });
     
@@ -78,7 +78,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
             </div>
         </div>
         
-        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3 bg-gray-700/50 text-gray-300 text-sm italic font-mono">
+        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3 bg-gray-700/50 text-gray-200 text-sm italic font-mono">
             <p v-for="(linha, index) in formatarItensParaExibicao(pedido.itens)" :key="index">
                 {{ linha }}
             </p>

@@ -1,22 +1,11 @@
-// src/shared/helpers/escposGenerator.helper.ts
-
 import type { DesignElement } from '@/shared/stores/printer';
 
-// Comandos ESC/POS Padrão
 const ESC = '\x1B';
 const GS = '\x1D';
 
-// --- CONFIGURAÇÕES BÁSICAS ---
-const INIT = ESC + '@'; // Inicializa a impressora
-const CUT = GS + 'V' + '\x00'; // Corte total (Full cut)
+const INIT = ESC + '@'; 
+const CUT = GS + 'V' + '\x00'; 
 
-// --- FUNÇÕES DE ESTILIZAÇÃO ESC/POS ---
-
-/**
- * Define o tamanho do caractere e negrito.
- * @param size 'sml' | 'md' | 'lg'
- * @param bold boolean
- */
 function setStyle(size: DesignElement['size'], bold: boolean): string {
     let command = '';
 
@@ -38,12 +27,7 @@ function setStyle(size: DesignElement['size'], bold: boolean): string {
     return command;
 }
 
-/**
- * Define o alinhamento do texto.
- * @param align 'left' | 'center' | 'right'
- */
 function setAlign(align: DesignElement['align']): string {
-    // ESC a n (0=esquerda, 1=centro, 2=direita)
     let command = ESC + 'a'; 
     switch (align) {
         case 'left':
@@ -59,12 +43,8 @@ function setAlign(align: DesignElement['align']): string {
     return command;
 }
 
-// --- GERAÇÃO DE COMANDOS PARA IMPRESSORA ---
+//  GERAÇÃO DE COMANDOS PARA IMPRESSORA 
 
-/**
- * Converte o array de elementos de design em uma string de comandos ESC/POS Raw.
- * Esta é a string que será enviada ao NSPRINTER.
- */
 export function generateEscPos(elements: DesignElement[], footerLines: number): string {
     let escposOutput = INIT; // Comando de inicialização
 

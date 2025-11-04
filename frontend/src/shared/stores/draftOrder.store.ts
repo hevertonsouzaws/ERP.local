@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import type { Pedido, PedidoItemPeca, PedidoItemServico, FormaPagamento, PagamentoRegistro } from "@/shared/types/pedido.type";
-import type { IGarmentType, IService } from "@/shared/types/catalog.type"; // Tipagens de Catálogo
+import type { Pedido, PedidoItemPeca, PedidoStatus, FormaPagamento, PagamentoRegistro } from "@/shared/types/pedido.type";
+import type { IGarmentType, IService } from "@/shared/types/catalog.type";
 import type { Cliente } from "@/shared/types/cliente.type";
 import { generateUUID } from "@/shared/helpers/uuid.helper";
 import { getDataHojeString } from "@/shared/helpers/data.helper";
 
-// Define a estrutura do rascunho (apenas os dados necessários)
 interface DraftOrder {
     cliente: Cliente | null;
     dataEntrega: string;
@@ -14,10 +13,6 @@ interface DraftOrder {
     itens: PedidoItemPeca[];
     pagamentos: PagamentoRegistro[];
 }
-
-// ==========================================================
-// FUNÇÕES UTILITÁRIAS
-// ==========================================================
 
 function calcularValorTotalItens(itens: PedidoItemPeca[]): number {
     return itens.reduce((totalGeral, peca) => {
@@ -89,7 +84,6 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
 
     function removeGarment(garmentUuid: string) {
         rascunho.value.itens = rascunho.value.itens.filter(p => p.uuid !== garmentUuid);
-        // Reajusta os lineNumbers
         rascunho.value.itens.forEach((p, index) => {
             p.lineNumber = index + 1;
         });
@@ -114,25 +108,24 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.pagamentos.splice(index, 1);
     }
 
-    // Função que transforma o rascunho em um objeto Pedido pronto para salvar
     function toPedidoForSave(): Omit<Pedido, 'uuid'> {
         if (!rascunho.value.cliente) {
             throw new Error('Cliente deve ser selecionado para salvar o pedido.');
         }
 
+        const statusOperacionalInicial: PedidoStatus = 'PENDENTE';
+        
         return {
             clienteUuidd: rascunho.value.cliente.uuid,
             clienteNome: rascunho.value.cliente.nome,
             dataEntrega: rascunho.value.dataEntrega,
             horarioEntrega: rascunho.value.horarioEntrega,
-            // NOVO: Usando a nova estrutura
             itens: rascunho.value.itens, 
-            status: valorRestante.value <= 0 ? 'CONCLUIDO' : 'PENDENTE',
+            status: statusOperacionalInicial,
             dataCriacao: getDataHojeString(),
             pagamentos: rascunho.value.pagamentos,
             valorPago: valorTotalPago.value,
         } as Omit<Pedido, 'uuid'>; 
-        // Omit<Pedido, 'uuid'> é usado para satisfazer o argumento da store principal
     }
 
     return {

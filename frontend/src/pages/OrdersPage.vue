@@ -2,8 +2,9 @@
 import { onMounted, ref, computed } from 'vue';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import type { Pedido, PedidoStatus } from '@/shared/types/pedido.type';
-import ReceberPagamentoModal from '@/shared/components/pedido/ReceberPagamentoModal.vue';
-import PedidoCard from '@/shared/components/pedido/PedidoCard.vue';
+import ReceberPagamentoModal from '@/shared/components/orders-page/ReceberPagamentoModal.vue';
+import PedidoCard from '@/shared/components/orders-page/PedidoCard.vue';
+import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 
 const store = usePedidoStore();
 const filtroStatus = ref<PedidoStatus | 'TODOS'>('TODOS');
@@ -26,13 +27,11 @@ const pedidosFiltrados = computed(() => {
     return list.sort((a, b) => a.dataEntrega.localeCompare(b.dataEntrega));
 });
 
-// A função mudou para receber o valorTotal calculado
 const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus, valorTotal: number) => {
     if (pedido.status === novoStatus) return;
 
     const valorRestante = valorTotal - pedido.valorPago;
 
-    // NOVO: Usa valorTotal calculado
     if (novoStatus === 'CONCLUIDO' && valorRestante > 0) {
         if (!confirm(`O pedido ${pedido.uuid.substring(0, 8)} ainda tem R$ ${valorRestante.toFixed(2)} pendentes. Deseja marcar como CONCLUÍDO mesmo assim?`)) {
             return;
@@ -40,13 +39,11 @@ const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus, valorTotal:
     }
 
     if (confirm(`Deseja realmente mudar o status do pedido ${pedido.uuid.substring(0, 8)} para ${novoStatus}?`)) {
-        // NOVO: O valor do pedido não precisa mais ser passado, pois a Store o calcula internamente
-        await store.atualizarStatusPedido(pedido.uuid, novoStatus); 
+        await store.atualizarStatusPedido(pedido.uuid, novoStatus);
         alert(`Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`);
     }
 }
 
-// A função foi ligeiramente simplificada para não precisar passar o valorTotal
 const abrirModalPagamento = (pedido: Pedido) => {
     pedidoSelecionado.value = pedido;
     mostrarModalPagamento.value = true;
@@ -60,10 +57,13 @@ const fecharModalPagamento = () => {
 const handlePagamentoSucesso = () => {
     fecharModalPagamento();
 };
+
+const isModalOpen = ref(false);
 </script>
 
 <template>
     <div class="min-h-screen text-white py-2 p-8 w-full">
+
         <div class="mb-6 flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-xl">
             <p class="text-xl font-semibold">Total de Pedidos: {{ store.pedidos.length }}</p>
 
@@ -94,5 +94,12 @@ const handlePagamentoSucesso = () => {
 
         <ReceberPagamentoModal v-if="mostrarModalPagamento" :pedido="pedidoSelecionado" @close="fecharModalPagamento"
             @payment-success="handlePagamentoSucesso" />
+
+        <button @click="isModalOpen = true"
+            class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
+            <i class="fi fi-rr-plus"></i>
+        </button>
+
+        <CreateOrder v-if="isModalOpen" @close="isModalOpen = false" />
     </div>
 </template>

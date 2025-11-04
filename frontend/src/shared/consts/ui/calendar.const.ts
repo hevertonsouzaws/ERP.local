@@ -1,0 +1,1 @@
+export const DIAS_DA_SEMANA_ABREVIADO: string[] = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];

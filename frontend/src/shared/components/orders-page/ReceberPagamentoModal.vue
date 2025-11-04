@@ -14,7 +14,6 @@ const pedidoStore = usePedidoStore();
 const formasDisponiveis: FormaPagamento[] = ['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO', 'OUTRO'];
 
 const pagamentosAtuais = ref<PagamentoRegistro[]>([]);
-// O valor total será calculado no watch/computed
 const valorTotalPedido = ref(0); 
 const valorPagoAnterior = ref(0);
 
@@ -36,14 +35,10 @@ const podeQuitar = computed(() => valorRestante.value <= 0);
 
 watch(() => props.pedido, (novoPedido) => {
     if (novoPedido) {
-        // NOVO: Calcula o valor total usando o getter da Store
         const totalCalculado = pedidoStore.getValorTotalPedido(novoPedido);
-        
         valorTotalPedido.value = totalCalculado;
         valorPagoAnterior.value = novoPedido.valorPago;
         pagamentosAtuais.value = [];
-        
-        // Define o valor sugerido para pagamento como o restante
         novoPagamento.value.valor = Math.max(0, totalCalculado - novoPedido.valorPago);
     }
 }, { immediate: true });
@@ -62,7 +57,6 @@ const adicionarPagamento = () => {
         timestamp: Date.now(),
     });
     
-    // Atualiza o valor sugerido para o restante do pagamento
     novoPagamento.value.valor = valorRestante.value;
 };
 
@@ -90,7 +84,6 @@ const salvarPagamento = async () => {
             novosPagamentos,
             novoValorPago,
             novoStatus
-            // REMOVIDO: O valor do pedido não precisa ser passado, a Store o calcula internamente agora.
         );
         
         alert(`Pagamento(s) registrado(s) com sucesso. Novo Status: ${novoStatus}.`);

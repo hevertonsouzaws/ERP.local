@@ -3,13 +3,11 @@ import { ref, onMounted } from 'vue';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import type { IService, IGarmentType } from '@/shared/types/catalog.type';
 
-// Importação dos componentes
-import GarmentTypeForm from '@/shared/components/catalog/GarmentTypeForm.vue';
-import ServiceForm from '@/shared/components/catalog/ServiceForm.vue';
-import ListGarmentType from '@/shared/components/catalog/ListGarmentType.vue';
-import ListService from '@/shared/components/catalog/ListService.vue';
+import GarmentTypeForm from '@/shared/components/catalog-page/GarmentTypeForm.vue';
+import ServiceForm from '@/shared/components/catalog-page/ServiceForm.vue';
+import ListGarmentType from '@/shared/components/catalog-page/ListGarmentType.vue';
+import ListService from '@/shared/components/catalog-page/ListService.vue';
 
-// A Store está nomeada como useServiceStore
 const catalogStore = useServiceStore();
 
 const isServiceModalOpen = ref(false);
@@ -19,11 +17,9 @@ const isGarmentModalOpen = ref(false);
 const selectedGarment = ref<IGarmentType | null>(null);
 
 onMounted(() => {
-    // Carrega o catálogo completo na inicialização
     catalogStore.loadCatalog();
 });
 
-// Funções do Modal de Serviço
 function openServiceModal(service: IService | null) {
     selectedService.value = service;
     isServiceModalOpen.value = true;
@@ -32,10 +28,9 @@ function openServiceModal(service: IService | null) {
 function closeServiceModal() {
     isServiceModalOpen.value = false;
     selectedService.value = null;
-    catalogStore.loadCatalog(); // Recarrega após fechar/sucesso
+    catalogStore.loadCatalog();
 }
 
-// Funções do Modal de Peça
 function openGarmentModal(garment: IGarmentType | null) {
     selectedGarment.value = garment;
     isGarmentModalOpen.value = true;
@@ -44,7 +39,7 @@ function openGarmentModal(garment: IGarmentType | null) {
 function closeGarmentModal() {
     isGarmentModalOpen.value = false;
     selectedGarment.value = null;
-    catalogStore.loadCatalog(); // Recarrega após fechar/sucesso
+    catalogStore.loadCatalog();
 }
 </script>
 
@@ -52,7 +47,8 @@ function closeGarmentModal() {
     <div class="p-5 max-w-full mx-auto">
         <div class="bg-gray-800 rounded-lg flex justify-between items-center gap-10 p-4">
             <div class="w-full">
-                <h1 class="text-gray-200 text-xl">Gerencie os tipos de peças de roupa e os serviços oferecidos na loja.</h1>
+                <h1 class="text-gray-200 text-xl">Gerencie os tipos de peças de roupa e os serviços oferecidos na loja.
+                </h1>
             </div>
             <div class="flex gap-10 w-[30%]">
                 <button @click="openServiceModal(null)"

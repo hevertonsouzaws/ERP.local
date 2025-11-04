@@ -74,27 +74,19 @@ export async function importarBackupClientes(file: File): Promise<void> {
 
                 await db.transaction('rw', db.clientes, async () => {
                     for (const clienteDoArquivo of backupData.clientes) {
-                        // O backup está vindo com a estrutura antiga (id: number). 
-                        // Buscamos pela chave de segurança Nome/Telefone.
                         const clienteExistente = await db.clientes
                             .where({ nome: clienteDoArquivo.nome, telefone: clienteDoArquivo.telefone })
                             .first();
 
-                        // O objeto a ser salvo precisa ter o UUID.
                         const clienteParaSalvar: Cliente = {
                             nome: clienteDoArquivo.nome,
                             telefone: clienteDoArquivo.telefone,
-                            // Mantemos o UUID do backup se existir, caso contrário, será gerado (veja a lógica de update)
-                            // Apenas os campos a serem inseridos/atualizados são definidos aqui:
-                            uuid: clienteExistente ? clienteExistente.uuid : generateUUID() // GERA UUID SE FOR NOVO
+                            uuid: clienteExistente ? clienteExistente.uuid : generateUUID() 
                         };
 
                         if (clienteExistente) {
-                            // ATUALIZAÇÃO: Usa o UUID do cliente existente.
-                            // clienteExistente.uuid AGORA É STRING, não number.
                             await db.clientes.update(clienteExistente.uuid, clienteParaSalvar);
                         } else {
-                            // INSERÇÃO: Adiciona com o UUID recém-gerado.
                             await db.clientes.add(clienteParaSalvar);
                         }
                     }

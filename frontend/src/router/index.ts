@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'; 
 import Home from '@/pages/HomePage.vue';
-import ClientePage from '@/pages/ClientePage.vue';
-import PedidosPage from '@/pages/PedidosPage.vue';
+import ClientePage from '@/pages/ClientPage.vue';
+import PedidosPage from '@/pages/OrdersPage.vue';
 import BackupPage from '@/pages/BackupPage.vue';
 import Printer from '@/pages/Printer.vue';
 import ServiceCatologPage from '@/pages/ServiceCatologPage.vue';

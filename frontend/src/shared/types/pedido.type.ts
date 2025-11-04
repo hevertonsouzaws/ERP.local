@@ -32,8 +32,9 @@ export interface Pedido {
     dataEntrega: string;
     horarioEntrega?: string;
     itens: PedidoItemPeca[]; 
-    status: PedidoStatus;
+    status: PedidoStatus; 
     dataCriacao: string;
     pagamentos: PagamentoRegistro[];
+    statusPagamento: PagamentoRegistro[];
     valorPago: number; 
 }

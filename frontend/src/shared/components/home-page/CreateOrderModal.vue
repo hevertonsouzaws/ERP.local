@@ -32,6 +32,8 @@ const selectedGarmentTypeUuid = ref<string | null>(null);
 const selectedServiceUuid = ref<string | null>(null);
 const itemQuantity = ref(1);
 
+const pecaSelecionadaParaServico = ref<PedidoItemPeca | null>(null); 
+
 const garmentTypes = computed(() => catalogStore.garmentTypes as IGarmentType[]);
 const services = computed(() => catalogStore.services as IService[]);
 
@@ -58,39 +60,57 @@ const currentItemPrice = computed(() => {
     return 0;
 });
 
-const adicionarItemAoPedido = () => {
+// FUNÇÃO ATUALIZADA: Adicionar PEÇA
+const adicionarPecaAoPedido = () => {
     const garment = garmentTypes.value.find(g => g.uuid === selectedGarmentTypeUuid.value);
-    const service = services.value.find(s => s.uuid === selectedServiceUuid.value);
-    const quantity = itemQuantity.value;
-
-    if (!garment || !service || quantity <= 0) {
-        alert('Selecione o tipo de peça, o serviço e uma quantidade válida.');
+    
+    if (!garment) {
+        alert('Selecione um tipo de peça para adicionar.');
         return;
     }
 
     draftStore.addGarment(garment);
+    
+    pecaSelecionadaParaServico.value = draftStore.rascunho.itens.slice(-1)[0] || null;
 
-    const newGarmentUuid = draftStore.rascunho.itens.slice(-1)[0]?.uuid;
+    selectedGarmentTypeUuid.value = null;
+};
 
-    if (newGarmentUuid) {
-        draftStore.addServiceToGarment(
-            newGarmentUuid,
-            service,
-            quantity,
-            service.defaultPrice
-        );
-    } else {
-        alert('Erro interno: Falha ao adicionar item principal.');
+const adicionarServicoAItemExistente = () => {
+    const service = services.value.find(s => s.uuid === selectedServiceUuid.value);
+    const quantity = itemQuantity.value;
+    const peca = pecaSelecionadaParaServico.value;
+
+    if (!peca) {
+        alert('Selecione uma peça na lista de itens para adicionar um serviço.');
+        return;
+    }
+    if (!service || quantity <= 0) {
+        alert('Selecione um serviço e uma quantidade válida.');
         return;
     }
 
-    selectedGarmentTypeUuid.value = null;
+    draftStore.addServiceToGarment(
+        peca.uuid, 
+        service,
+        quantity,
+        service.defaultPrice
+    );
+
     selectedServiceUuid.value = null;
     itemQuantity.value = 1;
 };
 
+const removerServico = (pecaUuid: string, servicoUuid: string) => {
+    draftStore.removeServiceFromGarment(pecaUuid, servicoUuid);
+}
+
 const removerItem = (uuid: string) => {
     draftStore.removeGarment(uuid);
+    // Limpa a seleção da peça ativa se ela foi removida
+    if (pecaSelecionadaParaServico.value?.uuid === uuid) {
+        pecaSelecionadaParaServico.value = null;
+    }
 };
 
 const adicionarPagamento = () => {
@@ -189,7 +209,7 @@ watch(valorTotalPedido, (novoValor) => {
     <div class="fixed inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center z-50 p-4"
         @click.self="emit('close')">
 
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-7xl relative text-white
+        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-[90%] relative text-white
                              max-h-full overflow-y-auto">
             <button @click="emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-white transition">
                 <i class="fi fi-rr-cross text-xl"></i>
@@ -246,18 +266,34 @@ watch(valorTotalPedido, (novoValor) => {
                             <i class="fi fi-rr-hanger mr-2"></i> Itens do Pedido
                         </h3>
 
-                        <div class="p-3 bg-gray-700 rounded-lg space-y-2">
+                        <div class="p-3 bg-gray-800 rounded-lg space-y-2 border-b border-gray-700 pb-4">
+                            <label class="block text-sm font-medium text-gray-200">Passo 1: Adicionar Peça</label>
                             <div class="flex space-x-2">
                                 <select v-model="selectedGarmentTypeUuid"
-                                    class="flex-1 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
-                                    <option :value="null" disabled>Selecione a Peça</option>
+                                    class="flex-1 p-2 bg-gray-800 border border-gray-600 rounded text-sm">
+                                    <option :value="null" disabled>Selecione o Tipo de Peça</option>
                                     <option v-for="garment in garmentTypes" :key="garment.uuid" :value="garment.uuid">
                                         {{ garment.name }}
                                     </option>
                                 </select>
+                                <button @click="adicionarPecaAoPedido" :disabled="!selectedGarmentTypeUuid"
+                                    class="w-1/4 bg-purple-600 p-2 rounded text-sm hover:bg-purple-500 disabled:opacity-50 transition">
+                                    Adicionar Peça
+                                </button>
+                            </div>
+                            <p v-if="pecaSelecionadaParaServico" class="text-sm text-green-400 mt-2">
+                                Peça Ativa: **{{ pecaSelecionadaParaServico.garmentName }}**. Adicione serviços abaixo.
+                                <button @click="pecaSelecionadaParaServico = null"
+                                    class="text-xs text-red-400 ml-3">Limpar seleção</button>
+                            </p>
+                        </div>
 
+                        <div class="p-3 bg-gray-800 rounded-lg space-y-2"
+                            :class="{ 'opacity-50 pointer-events-none': !pecaSelecionadaParaServico }">
+                            <label class="block text-sm font-medium text-gray-200">Passo 2: Adicionar Serviço</label>
+                            <div class="flex space-x-2">
                                 <select v-model="selectedServiceUuid"
-                                    class="flex-1 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
+                                    class="flex-1 p-2 bg-gray-800 border border-gray-600 rounded text-sm">
                                     <option :value="null" disabled>Selecione o Serviço</option>
                                     <option v-for="service in services" :key="service.uuid" :value="service.uuid">
                                         {{ service.name }} (R$ {{ service.defaultPrice.toFixed(2) }})
@@ -266,16 +302,16 @@ watch(valorTotalPedido, (novoValor) => {
                             </div>
                             <div class="flex space-x-2 items-center">
                                 <input type="number" v-model.number="itemQuantity" min="1"
-                                    class="w-1/4 p-2 bg-gray-600 border border-gray-600 rounded text-sm text-center" />
+                                    class="w-1/4 p-2 bg-gray-800 border border-gray-600 rounded text-sm text-center" />
 
-                                <span class="flex-1 text-sm font-semibold text-right text-yellow-400">
-                                    Total Item: R$ {{ currentItemPrice.toFixed(2) }}
+                                <span class="flex-1 text-sm font-semibold text-right text-purple-400">
+                                    Total Serviço: R$ {{ currentItemPrice.toFixed(2) }}
                                 </span>
 
-                                <button @click="adicionarItemAoPedido"
-                                    :disabled="!selectedGarmentTypeUuid || !selectedServiceUuid || itemQuantity <= 0"
+                                <button @click="adicionarServicoAItemExistente"
+                                    :disabled="!selectedServiceUuid || itemQuantity <= 0"
                                     class="w-1/4 bg-blue-600 p-2 rounded text-sm hover:bg-blue-500 disabled:opacity-50 transition">
-                                    <i class="fi fi-rr-plus"></i>
+                                    Adicionar Serviço
                                 </button>
                             </div>
                         </div>
@@ -284,23 +320,36 @@ watch(valorTotalPedido, (novoValor) => {
                             <div v-if="itensDoPedido.length === 0" class="text-gray-500 text-center text-sm p-4">
                                 Nenhum item adicionado ao pedido.
                             </div>
-                            <div v-for="(item, index) in itensDoPedido" :key="item.uuid"
-                                class="flex justify-between items-center bg-gray-600 p-3 rounded text-sm">
-                                <span class="font-medium text-gray-200">
-                                    {{ item.servicos[0].quantidade }}x {{ item.garmentName }} ({{ item.servicos[0].name
-                                    }})
-                                </span>
-                                <div class="flex items-center space-x-3">
-                                    <span class="text-green-400 font-bold">R$ {{ (item.servicos[0].quantidade *
-                                        item.servicos[0].unitPrice).toFixed(2) }}</span>
-                                    <button @click="removerItem(item.uuid)"
-                                        class="text-red-400 hover:text-red-300 transition">
-                                        <i class="fi fi-rr-trash text-xs"></i>
-                                    </button>
+                            <div v-for="item in itensDoPedido" :key="item.uuid"
+                                class="bg-gray-700 p-3 rounded text-sm border-l-4"
+                                :class="{ 'border-l-purple-500': pecaSelecionadaParaServico?.uuid === item.uuid, 'border-l-transparent': pecaSelecionadaParaServico?.uuid !== item.uuid }">
+
+                                <div class="flex justify-between items-center font-bold text-base text-gray-200 mb-2">
+                                    <span>{{ item.garmentName }} (Linha {{ item.lineNumber }})</span>
+                                    <div>
+                                        <button @click="pecaSelecionadaParaServico = item"
+                                            class="text-xs text-purple-300 hover:text-purple-400 mr-2">
+                                            Selecionar para Serviço
+                                        </button>
+                                        <button @click="removerItem(item.uuid)"
+                                            class="text-red-400 hover:text-red-300 transition">
+                                            <i class="fi fi-rr-trash text-sm"></i>
+                                        </button>
+                                    </div>
                                 </div>
+
+                                <ul class="ml-2 border-l border-gray-600 pl-3 space-y-1">
+                                    <li v-for="servico in item.servicos" :key="servico.uuid"
+                                        class="flex justify-between items-center text-gray-300">
+                                        <span class="text-xs">{{ servico.quantidade }}x {{ servico.name }}</span>
+                                        <span class="text-xs font-semibold text-green-400">R$ {{ (servico.quantidade *
+                                            servico.unitPrice).toFixed(2) }}</span>
+                                    </li>
+                                    <li v-if="item.servicos.length === 0" class="text-xs italic text-gray-400">Nenhum
+                                        serviço adicionado.</li>
+                                </ul>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -331,13 +380,13 @@ watch(valorTotalPedido, (novoValor) => {
                                 <p class="text-3xl text-green-400">R$ {{ valorTotalPedido.toFixed(2) }}</p>
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-gray-200">Total Pago:</p>
+                                <p class="text-sm font-medium text-gray-200 text-right">Total Pago:</p>
                                 <p class="text-3xl text-gray-200">R$ {{ valorTotalPago.toFixed(2) }}</p>
                             </div>
                         </div>
                         <div class="mt-4 border-t border-gray-700 pt-3 text-right">
                             <p class="text-sm font-medium text-gray-200">Falta Pagar:</p>
-                            <p class="text-4xl font-extrabold"
+                            <p class="text-4xl font-medium"
                                 :class="valorRestante > 0 ? 'text-red-500' : 'text-green-500'">
                                 R$ {{ valorRestante.toFixed(2) }}
                             </p>

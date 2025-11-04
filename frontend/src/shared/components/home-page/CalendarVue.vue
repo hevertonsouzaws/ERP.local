@@ -43,7 +43,6 @@ const selecionarDia = (dia: string) => {
     pedidoStore.filtrarPedidosPorData(dia);
 }
 
-// Mapeia os pedidos para contagem por dia
 const pedidosPorDia = computed(() => {
     const contagem: { [key: string]: number } = {};
 
@@ -67,7 +66,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full bg-gray-800 p-6 rounded-xl shadow-xl text-white">
+    <div class="w-full bg-gray-800 py-3 p-6 rounded-xl shadow-xl text-white">
         <div class="flex justify-between items-center mb-4">
             <button @click="mudarMes(-1)"
                 class="p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700 transition">
@@ -95,7 +94,7 @@ onMounted(() => {
                 <button @click="selecionarDia(getDiaString(dia))" :class="[
                     'w-full h-full flex flex-col justify-center items-center rounded-xl text-white font-medium transition duration-150 relative',
                     { 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-500': isSelected(dia) },
-                    { 'ring-2 ring-2 ring-blue-500/50 bg-gray-700': isHoje(dia) && !isSelected(dia) },
+                    { 'ring-2 ring-blue-500/50 bg-gray-700': isHoje(dia) && !isSelected(dia) },
                     { 'hover:bg-gray-700': !isSelected(dia) && !isHoje(dia) },
                     { 'bg-gray-700/50': !isSelected(dia) && !isHoje(dia) && getContagemPedidos(dia) > 0 }
                 ]">

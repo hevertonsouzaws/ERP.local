@@ -2,20 +2,19 @@
 import { onMounted, ref } from 'vue';
 import { useClienteStore } from '@/shared/stores/cliente.store';
 import type { Cliente } from '@/shared/types/cliente.type';
-import ClienteCard from '@/shared/components/Cliente/ClienteCard.vue';
-import ClienteEditarModal from '@/shared/components/Cliente/ClienteEditarModal.vue';
-import ClienteAdicionarModal from '@/shared/components/Cliente/ClienteAdicionarModal.vue'; // NOVO IMPORT
+import ClienteCard from '@/shared/components/client-page/ClienteCard.vue';
+import ClienteEditarModal from '@/shared/components/client-page/ClienteEditarModal.vue';
+import ClienteAdicionarModal from '@/shared/components/client-page/ClienteAdicionarModal.vue'; 
 
 const store = useClienteStore();
 const clienteParaEditar = ref<Cliente | null>(null);
 const mostrarModalEdicao = ref(false);
-const mostrarModalAdicionar = ref(false); // NOVO ESTADO
+const mostrarModalAdicionar = ref(false); 
 
 onMounted(() => {
     store.carregarClientes();
 });
 
-// Ações para o Modal de Edição
 const abrirEdicao = (cliente: Cliente) => {
     clienteParaEditar.value = cliente;
     mostrarModalEdicao.value = true;
@@ -30,7 +29,6 @@ const handleClienteAtualizado = () => {
     fecharModalEdicao();
 }
 
-// Ações para o Modal de Adição (NOVO)
 const abrirModalAdicionar = () => {
     mostrarModalAdicionar.value = true;
 };
@@ -39,7 +37,6 @@ const fecharModalAdicionar = () => {
     mostrarModalAdicionar.value = false;
 };
 
-// O 'handleClienteAdicionado' pode ser vazio, pois a store já recarrega.
 const handleClienteAdicionado = () => {
     fecharModalAdicionar();
 }
@@ -66,7 +63,7 @@ const handleClienteAdicionado = () => {
                 Nenhum cliente cadastrado ainda. Clique em "Adicionar Cliente" para começar.
             </p>
 
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 <ClienteCard
                     v-for="cliente in store.clientes"
                     :key="cliente.uuid"
