@@ -34,11 +34,6 @@ const router = createRouter({
       name: 'backup',
       component: BackupPage,
     },
-    {
-      path: '/print',
-      name: 'print',
-      component: Printer,
-    },
   ],
 });
 

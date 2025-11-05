@@ -14,9 +14,9 @@ const pedidoStore = usePedidoStore();
 
 const getStatusClass = (status: PedidoStatus) => {
     switch (status) {
-        case 'PENDENTE': return 'border-2 border-yellow-400 text-yellow-200 bg-yellow-900/20';
-        case 'CONCLUIDO': return 'border-2 border-green-400 text-green-200 bg-green-900/20';
-        case 'CANCELADO': return 'border-2 border-red-600 text-red-200 bg-red-900/20';
+        case 'PENDENTE': return 'border border-yellow-400';
+        case 'CONCLUIDO': return 'border border-green-400';
+        case 'CANCELADO': return 'border border-red-600';
     }
 }
 
@@ -52,14 +52,14 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
 <template>
     <div 
-        class="w-full p-5 bg-gray-800 rounded-lg shadow-md transition duration-150 xl:w-[32.5%] lg:w-[48.5%] md:w-full"
+        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 xl:w-[32.5%] lg:w-[48.5%] md:w-full"
     >
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">
                 <i class="fi fi-rr-user text-purple-400 mr-2 text-xl"></i>
                 <p class="font-semibold text-sm text-white">{{ pedido.clienteNome }}</p>
             </div>
-            <span :class="['text-xs py-0.5 px-2 rounded-full uppercase', getStatusClass(pedido.status)]">
+            <span :class="['text-xs py-1 px-4 rounded-full uppercase', getStatusClass(pedido.status)]">
                 {{ pedido.status }}
             </span>
         </div>
@@ -78,7 +78,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
             </div>
         </div>
         
-        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3 bg-gray-700/50 text-gray-200 text-sm italic font-mono">
+        <div class="h-[110px] overflow-y-auto border-t border-b border-gray-600 rounded-lg p-2 mb-3 bg-gray-800 text-gray-200 text-sm italic font-mono">
             <p v-for="(linha, index) in formatarItensParaExibicao(pedido.itens)" :key="index">
                 {{ linha }}
             </p>
@@ -88,7 +88,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
             <button 
                 v-if="valorRestante > 0 && pedido.status !== 'CANCELADO' && pedido.status !== 'CONCLUIDO'"
                 @click="emitirAbrirPagamento"
-                class="py-1 px-3 rounded-lg text-sm transition duration-150 bg-yellow-600 hover:bg-yellow-500 text-white font-semibold flex items-center"
+                class="py-1 px-3 rounded-lg text-sm transition duration-150 border border-gray-400 hover:bg-green-800 hover:border-green-800 text-white font-semibold flex items-center"
             >
                 <i class="fi fi-rr-coins mr-1"></i> Receber
             </button>
@@ -97,16 +97,16 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
                 @click="emitirMudarStatus('PENDENTE')" 
                 :disabled="pedido.status === 'PENDENTE'"
                 class="py-1 px-3 rounded-lg text-sm transition duration-150"
-                :class="[pedido.status === 'PENDENTE' ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'border-2 border-yellow-600 hover:bg-yellow-600 text-white']"
+                :class="[pedido.status === 'PENDENTE' ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'border border-gray-400 hover:border-yellow-800 hover:bg-yellow-800 text-white']"
             >
-                <i class="fi fi-rr-clock mr-1"></i> Pendente
+                <i class="fi fi-rr-clock mr-1"></i> REFAZER
             </button>
 
             <button 
                 @click="emitirMudarStatus('CONCLUIDO')" 
                 :disabled="pedido.status === 'CONCLUIDO'"
                 class="py-1 px-3 rounded-lg text-sm transition duration-150"
-                :class="[pedido.status === 'CONCLUIDO' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'border-2 border-green-600 hover:bg-green-800 text-white']"
+                :class="[pedido.status === 'CONCLUIDO' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'border border-gray-400 hover:bg-green-800 hover:border-green-800 text-white']"
             >
                 <i class="fi fi-rr-check-circle mr-1"></i> Concluir
             </button>

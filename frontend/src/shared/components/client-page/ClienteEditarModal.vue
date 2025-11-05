@@ -45,13 +45,13 @@ const salvarEdicao = async () => {
 </script>
 
 <template>
-    <div v-if="cliente" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center z-50 p-4"
+    <div v-if="cliente" class="fixed inset-0 bg-gray-950 bg-opacity-80 flex justify-center items-center z-50 p-4"
         @click.self="emit('close')">
         
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md relative text-white">
+        <div class="bg-gray-950 border border-gray-500 p-8 rounded-2xl shadow-2xl w-full max-w-md relative text-white">
             <button @click="emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
                     class="fi fi-rr-cross text-xl"></i></button>
-            <h2 class="text-2xl font-bold mb-6 text-white border-b border-gray-700 pb-2">
+            <h2 class="text-xl mb-6 text-white border-b border-gray-700 pb-2">
                 Editar Cliente #{{ cliente.uuid.substring(0, 8) }}
             </h2>
 
@@ -59,17 +59,17 @@ const salvarEdicao = async () => {
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Nome Completo</label>
                     <input type="text" v-model="clienteEditado.nome" required
-                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                        class="w-full p-3 bg-gray-950 border border-gray-500 rounded-lg text-white">
                 </div>
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-1">Telefone (Opcional)</label>
                     <input type="text" v-model="clienteEditado.telefone"
-                        class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                        class="w-full p-3 bg-gray-950 border border-gray-500 rounded-lg text-white">
                 </div>
                 
                 <button type="submit"
-                    class="w-full py-3 mt-4 bg-green-600 rounded-lg font-semibold hover:bg-green-700 transition">
+                    class="w-full py-3 mt-4 bg-green-700 rounded-lg font-semibold hover:bg-green-600 transition">
                     Salvar
                 </button>
             </form>

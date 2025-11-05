@@ -1,6 +1,6 @@
 <template>
     <div class="space-y-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
-        <h3 class="font-bold flex items-center text-lg text-yellow-400 border-b border-gray-700 pb-2">
+        <h3 class="font-bold flex items-center text-lg border-b border-gray-700 pb-2">
             <i class="fi fi-rr-money-bill-wave mr-2"></i> Resumo e Pagamento
         </h3>
 
@@ -23,7 +23,7 @@
         </div>
 
         <div class="pt-3 border-t border-gray-700 space-y-3">
-            <h4 class="font-semibold text-gray-200">Adicionar Pagamento:</h4>
+            <h4 class="font-semibold">Adicionar Pagamento:</h4>
             
             <div class="flex space-x-2">
                 <select v-model="paymentLogica.novoPagamento.value.forma"
@@ -37,7 +37,6 @@
                 
                 <input type="number" 
                     v-model.number="paymentLogica.novoPagamento.value.valor"
-                    :placeholder="`Sugestão: R$ ${paymentLogica.novoValorPagamentoSugerido.value.toFixed(2)}`"
                     class="flex-1 p-2 bg-gray-800 border border-gray-600 rounded text-sm text-right w-full"
                     min="0" step="0.01">
 

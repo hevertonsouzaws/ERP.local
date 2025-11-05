@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-gray-900 border-b border-violet-600 top-0 z-50 p-6">
+    <header class="border-b border-violet-600 top-0 z-50 p-6">
         <nav class="text-white">
             <div class="flex flex-col items-center justify-center gap-20 gap-y-4 md:flex-row">
                 <router-link to="/">

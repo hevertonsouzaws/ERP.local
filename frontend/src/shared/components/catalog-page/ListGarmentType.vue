@@ -1,7 +1,7 @@
 <template>
     <div class="overflow-y-auto rounded-md w-full flex justify-between items-center flex-wrap gap-y-4">
         <div v-for="garment in garmentTypes" :key="garment.uuid"
-            class="flex justify-between items-center p-6 rounded-lg bg-gray-900 w-[48%] border border-green-600">
+            class="flex justify-between items-center p-6 rounded-xl w-[48%] border border-gray-400">
             <span class="text-base font-medium">{{ garment.name }}</span>
             <div class="flex space-x-2">
                 <button @click="$emit('edit', garment)"

@@ -44,8 +44,8 @@ const handleClienteAdicionado = () => {
 
 <template>
     <div class="min-h-screen text-white py-2 p-8 w-full">
-        <div class="mb-6 flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-xl">
-            <h1 class="text-2xl font-bold text-white">Gerenciamento de Clientes</h1>
+        <div class="mb-6 flex justify-between items-center p-4 border border-gray-500 rounded-xl shadow-xl">
+            <h1 class="text-2xl font-semibold text-white">Clientes Cadastrados</h1>
             
             <div class="flex items-center space-x-4">
                 <p class="text-xl font-semibold">Total: {{ store.clientes.length }}</p>

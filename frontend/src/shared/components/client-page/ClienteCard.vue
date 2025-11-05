@@ -9,7 +9,7 @@ const emit = defineEmits(['edit']);
 </script>
 
 <template>
-    <div class="bg-gray-700 p-4 rounded-lg shadow-md flex justify-between items-center transition duration-150 hover:bg-gray-600">
+    <div class="bg-gray-900 border border-gray-600 p-4 rounded-lg shadow-md flex justify-between items-center transition duration-150 ">
         <div class="flex items-center space-x-4">
             <i class="fi fi-rr-user text-2xl text-purple-400"></i>
             <div>
@@ -24,9 +24,9 @@ const emit = defineEmits(['edit']);
         
         <button 
             @click="emit('edit', cliente)"
-            class="py-1 px-3 bg-purple-700 rounded-lg text-sm text-white font-medium hover:bg-purple-800 transition flex items-center"
+            class="py-1 px-3 border border-gray-500 rounded-lg text-sm text-white font-medium hover:bg-gray-800 transition flex items-center"
         >
-            <i class="fi fi-rr-edit text-sm mr-1"></i> Editar
+            <i class="fi fi-rr-edit text-sm mr-2 mt-1"></i> Editar
         </button>
     </div>
 </template>

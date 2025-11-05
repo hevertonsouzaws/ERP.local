@@ -64,12 +64,12 @@ const isModalOpen = ref(false);
 <template>
     <div class="min-h-screen text-white py-2 p-8 w-full">
 
-        <div class="mb-6 flex justify-between items-center p-4 bg-gray-800 rounded-xl shadow-xl">
+        <div class="mb-6 flex justify-between items-center p-4 border border-gray-500 rounded-xl shadow-xl">
             <p class="text-xl font-semibold">Total de Pedidos: {{ store.pedidos.length }}</p>
 
             <div class="flex items-center space-x-3">
-                <label class="text-gray-400">Filtrar por Status:</label>
-                <select v-model="filtroStatus" class="p-2 bg-gray-700 border border-gray-600 rounded-lg text-white">
+                <label class="text-gray-200">Filtrar por Status:</label>
+                <select v-model="filtroStatus" class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white">
                     <option value="TODOS">Todos ({{ store.pedidos.length }})</option>
                     <option value="PENDENTE">Pendentes</option>
                     <option value="CONCLUIDO">Concluídos</option>
@@ -79,7 +79,7 @@ const isModalOpen = ref(false);
         </div>
 
         <div class="rounded-xl shadow-2xl">
-            <p v-if="!store.carregando" class="text-gray-500 flex items-center">
+            <p v-if="!store.carregando" class="text-gray-200 flex items-center">
                 <i class="fi fi-rr-spinner animate-spin mr-2"></i> Carregando pedidos...
             </p>
             <p v-else-if="pedidosFiltrados.length === 0" class="text-gray-500 text-center py-10">

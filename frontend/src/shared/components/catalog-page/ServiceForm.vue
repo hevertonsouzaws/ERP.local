@@ -16,11 +16,7 @@
                 <input v-model.number="formData.defaultPrice" type="number" step="0.01" min="0" required
                     class="bg-transparent p-2 border border-gray-200 rounded-md" />
             </label>
-
-            <label class="flex flex-col">
-                <span class="text-sm font-medium mb-1">Descrição (Opcional)</span>
-            </label>
-
+            
             <div class="flex justify-end space-x-3 pt-2">
                 <button type="button" @click="$emit('close')"
                     class="px-4 py-2  bg-gray-800 rounded-md hover:bg-red-900 transition duration-150 border border-gray-400">
