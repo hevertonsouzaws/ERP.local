@@ -71,7 +71,7 @@ const atualizarPedido = async () => {
             novoDesconto,
         );
 
-        showToast(`Pedido ${pedidoUUID.substring(0, 8)} atualizado com sucesso.`, 'success');
+        showToast(`Pedido atualizado com sucesso.`, 'success');
         
         emit('edit-success');
         emit('close');
@@ -90,7 +90,7 @@ const atualizarPedido = async () => {
             <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
                 <h2 class="text-2xl font-bold text-white flex items-center">
                     <i class="fi fi-rr-edit text-3xl mr-3 text-blue-400"></i>
-                    Editar Pedido #{{ pedido.uuid.substring(0, 8) }}
+                    Editar Pedido de: {{ pedido.clienteNome }}
                 </h2>
                 <button @click="$emit('close')" class="text-gray-400 hover:text-white transition">
                     <i class="fi fi-rr-cross-small text-2xl"></i>

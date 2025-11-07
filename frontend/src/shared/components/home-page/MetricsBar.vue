@@ -28,7 +28,7 @@ pedidoStore.carregarMetricasAtuais();
                     flex justify-between items-center transition duration-300 mt2 hover:scale-[1.02]">
             <div>
                 <p class="text-sm font-medium">Receita</p>
-                <p class="text-xl font-semibold text-gray-200">
+                <p class="text-xl font-semibold text-red-200">
                     {{ formatCurrency(pedidoStore.metricasAtuais?.receitaTotal || 0) }}
                 </p>
             </div>

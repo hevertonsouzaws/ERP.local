@@ -10,7 +10,7 @@ export interface MetricasFinanceiras {
 
 export interface TransacaoFinanceira {
     id: string;
-    data: string; // ISO string
+    data: string; 
     descricao: string;
     tipo: 'RECEITA' | 'DESPESA';
     valor: number;

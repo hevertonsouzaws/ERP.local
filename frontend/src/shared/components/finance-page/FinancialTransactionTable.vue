@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
+    <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-700">
         <h3 class="text-xl font-bold text-white mb-4">Últimas Transações</h3>
         
         <div class="overflow-x-auto">
@@ -29,7 +29,7 @@ const props = defineProps<{
                         </td>
                         <td class="px-4 py-2 text-sm font-medium text-white">{{ t.descricao }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-sm font-semibold" 
-                            :class="t.tipo === 'RECEITA' ? 'text-green-400' : 'text-red-400'">
+                            :class="t.tipo === 'RECEITA' ? 'text-gray-200' : 'text-gray-200'">
                             {{ t.tipo === 'RECEITA' ? '+' : '-' }} R$ {{ t.valor.toFixed(2).replace('.', ',') }}
                         </td>
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">{{ t.metodoPagamento }}</td>

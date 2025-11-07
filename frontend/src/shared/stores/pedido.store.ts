@@ -177,14 +177,12 @@ export const usePedidoStore = defineStore('pedidos', () => {
         pedidoUuid: string,
         novosItens: PedidoItemPeca[],
         novosPagamentos: PagamentoRegistro[],
-        // 🎯 NOVO: Recebe o novo desconto para persistência
         novoDescontoPorcentagem: number,
     ) {
         try {
             const pedido = pedidos.value.find(p => p.uuid === pedidoUuid);
             if (!pedido) return;
 
-            // Cria um pedido temporário para recalcular o total com os novos itens E o novo desconto
             const novoPedidoCalculo: Pedido = {
                 ...pedido,
                 itens: novosItens,

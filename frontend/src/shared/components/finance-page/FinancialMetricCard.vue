@@ -5,7 +5,6 @@ const props = defineProps<{
     title: string;
     value: number;
     icon: string; 
-    colorClass: string; 
     isCurrency?: boolean;
 }>();
 
@@ -18,13 +17,13 @@ const formattedValue = computed(() => {
 </script>
 
 <template>
-    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 hover:border-blue-500 transition duration-300">
+    <div class="p-6 rounded-xl shadow-lg border border-gray-500 hover:border-white transition duration-300">
         <div class="flex justify-between items-start">
             <div class="text-white">
-                <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">{{ title }}</p>
-                <h3 class="text-3xl font-bold mt-1" :class="colorClass">{{ formattedValue }}</h3>
+                <p class="text-sm  text-gray-200 uppercase tracking-wider">{{ title }}</p>
+                <h3 class="text-3xl mt-1">{{ formattedValue }}</h3>
             </div>
-            <i :class="[icon, 'text-3xl', colorClass]"></i>
+            <i :class="[icon, 'text-3xl']"></i>
         </div>
     </div>
 </template>

@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { usePedidoStore } from './pedido.store';
 import type { MetricasFinanceiras, TransacaoFinanceira } from '../types/fincanceiro.type';
+import { getDataHojeString } from '../helpers/data.helper';
 
 export const useFinanceiroStore = defineStore('financeiro', {
     state: () => ({
@@ -13,13 +14,13 @@ export const useFinanceiroStore = defineStore('financeiro', {
             pedidoStore.pedidos.forEach(pedido => {
                 pedido.pagamentos.forEach(pagamento => {
                     transacoes.push({
-                        id: `${pedido.uuid}-${pagamento.data}`,
-                        data: pagamento.data,
+                        id: `${pedido.uuid}-${pagamento.timestamp}`,
+                        data: getDataHojeString(),
                         descricao: `Pagamento do Pedido #${pedido.uuid.substring(0, 8)}`,
                         tipo: 'RECEITA',
                         valor: pagamento.valor,
                         referencia: pedido.uuid,
-                        metodoPagamento: pagamento.metodo,
+                        metodoPagamento: pagamento.forma,
                     });
                 });
             });
@@ -28,13 +29,9 @@ export const useFinanceiroStore = defineStore('financeiro', {
 
         metricas(state): MetricasFinanceiras {
             const pedidoStore = usePedidoStore();
-
             const pedidosConcluidos = pedidoStore.pedidos.filter(p => p.status === 'CONCLUIDO').length;
             const pedidosPendentes = pedidoStore.pedidos.filter(p => p.status === 'PENDENTE').length;
-
             const valorPagoEmPedidos = this.transacoesPedidos.reduce((acc, t) => acc + t.valor, 0);
-            
-            // Calculamos o total de todos os pedidos e subtraímos o que foi pago para ter o pendente
             const receitaTotalGeral = pedidoStore.pedidos.reduce((acc, p) => acc + pedidoStore.getValorTotalPedido(p), 0);
             const valorPendenteEmPedidos = receitaTotalGeral - valorPagoEmPedidos;
 
