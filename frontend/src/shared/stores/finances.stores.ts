@@ -27,6 +27,16 @@ export const useFinanceiroStore = defineStore('financeiro', {
             return transacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
         },
 
+         distribuicaoPagamentos(): Record<string, number> {
+            return this.transacoesPedidos.reduce((acc, transacao) => {
+                if (transacao.tipo === 'RECEITA') {
+                    const metodo = transacao.metodoPagamento.toUpperCase() || 'OUTRO';
+                    acc[metodo] = (acc[metodo] || 0) + transacao.valor;
+                }
+                return acc;
+            }, {} as Record<string, number>);
+        },
+
         metricas(state): MetricasFinanceiras {
             const pedidoStore = usePedidoStore();
             const pedidosConcluidos = pedidoStore.pedidos.filter(p => p.status === 'CONCLUIDO').length;
