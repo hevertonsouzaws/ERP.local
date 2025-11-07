@@ -91,12 +91,12 @@ const handleImportarPedidos = async (event: Event) => {
 </script>
 
 <template>
-    <div class="text-white p-8 w-full lg:max-w-[80%] m-auto mt-5">
+    <div class="text-white p-8 w-full lg:max-w-[80%] m-auto">
         <div class="flex flex-col items-center justify-between border border-gray-500 mb-5 p-5 rounded-lg w-full">
             <h1 class="text-2xl mb-4 flex items-center">
                 <i class="fi fi-rr-cloud text-3xl mr-3"></i>Backup e Restauração
             </h1>
-            <div class="text-base  bg-green-900 rounded-xl w-full xl:w-[50%]">
+            <div class="text-base  bg-green-950 rounded-xl w-full xl:w-[50%]">
                 <h1 class="p-2 flex items-center justify-center">
                     <i class="fi fi-rr-info text-2xl mr-3"></i>
                     Esta área foi criada para recuperar dados baixados do nosso sistema.

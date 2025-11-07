@@ -1,20 +1,21 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
-import type { Pedido, FormaPagamento, PagamentoRegistro, PedidoStatus } from '@/shared/types/pedido.type';
+import type { Pedido, FormaPagamento, PagamentoRegistro } from '@/shared/types/pedido.type';
+import { showToast } from '@/shared/helpers/toastState'; 
 
 const props = defineProps<{
     pedido: Pedido | null;
 }>();
 
-const emit = defineEmits(['close', 'payment-success']);
+const emit = defineEmits(['close', 'payment-success']); 
 
 const pedidoStore = usePedidoStore();
 
 const formasDisponiveis: FormaPagamento[] = ['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO', 'OUTRO'];
 
 const pagamentosAtuais = ref<PagamentoRegistro[]>([]);
-const valorTotalPedido = ref(0); 
+const valorTotalPedido = ref(0);
 const valorPagoAnterior = ref(0);
 
 const novoPagamento = ref({
@@ -27,70 +28,75 @@ const valorTotalPago = computed(() => {
 });
 
 const valorRestante = computed(() => {
-    const restante = valorTotalPedido.value - valorTotalPago.value;
-    return Math.max(0, restante);
+    return Math.max(0, valorTotalPedido.value - valorTotalPago.value);
 });
 
-const podeQuitar = computed(() => valorRestante.value <= 0);
+const podeQuitar = computed(() => valorTotalPago.value >= valorTotalPedido.value);
 
-watch(() => props.pedido, (novoPedido) => {
-    if (novoPedido) {
-        const totalCalculado = pedidoStore.getValorTotalPedido(novoPedido);
-        valorTotalPedido.value = totalCalculado;
-        valorPagoAnterior.value = novoPedido.valorPago;
-        pagamentosAtuais.value = [];
-        novoPagamento.value.valor = Math.max(0, totalCalculado - novoPedido.valorPago);
+watch(() => props.pedido, (newPedido) => {
+    if (newPedido) {
+        const subtotal = newPedido.itens.reduce((totalGeral, peca) => {
+            const subtotalPeca = peca.servicos.reduce((totalPeca, servico) => {
+                return totalPeca + (servico.quantidade * servico.unitPrice);
+            }, 0);
+            return totalGeral + subtotalPeca;
+        }, 0);
+
+        const valorComDesconto = subtotal * (1 - newPedido.descontoPorcentagem / 100);
+        valorTotalPedido.value = parseFloat(valorComDesconto.toFixed(2));
+        
+        valorPagoAnterior.value = newPedido.valorPago;
+        pagamentosAtuais.value = []; // Limpa pagamentos novos ao trocar de pedido
+        novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
     }
 }, { immediate: true });
 
 const adicionarPagamento = () => {
     const valorPagar = parseFloat(novoPagamento.value.valor.toFixed(2));
-    
+
     if (valorPagar <= 0) {
-        alert('O valor a pagar deve ser maior que zero.');
+        showToast('O valor a pagar deve ser maior que zero.', 'warning'); // 🎯 USANDO TOAST
         return;
     }
-    
+
     pagamentosAtuais.value.push({
         forma: novoPagamento.value.forma,
         valor: valorPagar,
         timestamp: Date.now(),
     });
-    
-    novoPagamento.value.valor = valorRestante.value;
+
+    novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
 };
 
 const removerPagamento = (index: number) => {
     pagamentosAtuais.value.splice(index, 1);
-    novoPagamento.value.valor = valorRestante.value;
+    novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
 };
 
 const salvarPagamento = async () => {
     if (!props.pedido || pagamentosAtuais.value.length === 0) {
-        alert('Nenhum pagamento novo para registrar.');
+        showToast('Nenhum pagamento novo para registrar.', 'warning'); // 🎯 USANDO TOAST
         return;
     }
 
-    const { uuid } = props.pedido; 
+    const { uuid } = props.pedido;
 
     const novosPagamentos = props.pedido.pagamentos.concat(pagamentosAtuais.value);
     const novoValorPago = valorTotalPago.value;
-    
-    const novoStatus: PedidoStatus = podeQuitar.value ? 'CONCLUIDO' : 'PENDENTE';
-    
+
     try {
         await pedidoStore.registrarNovoPagamento(
             uuid,
             novosPagamentos,
             novoValorPago,
-            novoStatus
         );
-        
-        alert(`Pagamento(s) registrado(s) com sucesso. Novo Status: ${novoStatus}.`);
+
+        showToast(`Pagamento(s) registrado(s) com sucesso.`, 'success'); // 🎯 USANDO TOAST
         emit('payment-success');
+        
     } catch (error) {
         console.error('Erro ao registrar pagamento:', error);
-        alert('Houve um erro ao registrar o pagamento.');
+        showToast('Houve um erro ao registrar o pagamento.', 'error'); // 🎯 USANDO TOAST
     }
 };
 
@@ -100,73 +106,99 @@ const fecharModal = () => {
 </script>
 
 <template>
-    <div v-if="pedido" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center z-50 p-4"
-        @click.self="fecharModal">
-        
-        <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-lg relative text-white max-h-[90vh] overflow-y-auto">
-            <button @click="fecharModal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
-                        class="fi fi-rr-cross text-xl"></i></button>
-            <h2 class="text-xl mb-6 text-gray-200 border-b border-gray-700 pb-2">
-                Receber Pagamento | Pedido #{{ pedido.uuid.substring(0, 8) }}
-            </h2>
+    <div v-if="pedido" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-gray-800 rounded-xl shadow-2xl w-full lg:max-w-xl p-6 flex flex-col max-h-[90vh]" @click.stop>
 
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="p-3 bg-gray-700 rounded-lg">
-                    <p class="text-sm text-gray-400">Cliente</p>
-                    <p class="font-bold">{{ pedido.clienteNome }}</p>
-                </div>
-                <div class="p-3 bg-gray-700 rounded-lg">
-                    <p class="text-sm text-gray-400">Total do Pedido</p>
-                    <p class="font-bold text-green-400 text-xl">R$ {{ valorTotalPedido.toFixed(2) }}</p>
-                </div>
+            <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fi fi-rr-money-bill-wave text-3xl mr-3 text-green-400"></i>
+                    Receber Pagamento
+                </h2>
+                <button @click="fecharModal" class="text-gray-400 hover:text-white transition">
+                    <i class="fi fi-rr-cross-small text-2xl"></i>
+                </button>
             </div>
 
-            <div class="mb-6 p-4 rounded-lg" :class="podeQuitar ? 'bg-green-900/40' : 'bg-red-900/40'">
-                       <p class="text-lg font-medium text-gray-200">Total Pago Anteriormente:</p>
-                       <p class="text-xl font-extrabold text-blue-400">R$ {{ valorPagoAnterior.toFixed(2) }}</p>
-
-                       <p class="text-lg font-medium text-gray-200 mt-3">Valor Pendente:</p>
-                       <p class="text-3xl font-extrabold" :class="valorRestante > 0 ? 'text-red-400' : 'text-green-400'">
-                           R$ {{ valorRestante.toFixed(2) }}
-                       </p>
-            </div>
-            
-            <div class="p-4 bg-gray-700 rounded-lg mb-6">
-                <h3 class="font-bold mb-3 flex items-center text-lg text-green-300"><i class="fi fi-rr-money-bill-wave mr-2"></i> Adicionar Pagamento</h3>
+            <div class="flex-1 overflow-y-auto pr-2 space-y-4">
                 
-                <div class="flex space-x-2">
-                    <select v-model="novoPagamento.forma" class="flex-1 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
-                        <option v-for="forma in formasDisponiveis" :key="forma" :value="forma">{{ forma }}</option>
-                    </select>
-                    
-                    <input type="number" v-model.number="novoPagamento.valor" min="0" step="0.01"
-                        placeholder="Valor a Pagar"
-                        class="w-2/5 p-2 bg-gray-600 border border-gray-600 rounded text-sm">
-                    
-                    <button @click="adicionarPagamento" :disabled="novoPagamento.valor <= 0"
-                        class="w-1/4 bg-green-600 p-2 rounded text-sm hover:bg-green-500 disabled:opacity-50 transition">
-                        <i class="fi fi-rr-plus"></i>
-                    </button>
-                </div>
-                
-                <div v-if="pagamentosAtuais.length > 0" class="mt-4 pt-3 border-t border-gray-600 space-y-1">
-                    <p class="text-sm text-gray-400">Pagamentos a registrar:</p>
-                    <div v-for="(pag, index) in pagamentosAtuais" :key="index" 
-                        class="flex justify-between items-center bg-gray-600 p-2 rounded text-sm">
-                        <span class="font-medium">{{ pag.forma }}:</span>
-                        <span class="text-gray-200 font-bold">R$ {{ pag.valor.toFixed(2) }}</span>
-                        <button @click="removerPagamento(index)" class="text-red-400 hover:text-red-600 hover:scale-110 rounded-full hover:bg-black/50 p-1 transition">
-                            <i class="fi fi-rr-trash text-xs"></i>
-                        </button>
+                <div class="bg-gray-700 p-4 rounded-xl shadow-inner space-y-2">
+                    <p class="text-sm font-semibold text-gray-300">Pedido: <span class="text-blue-400">#{{ pedido.uuid.substring(0, 8) }}</span></p>
+                    <p class="text-lg font-bold text-white">Cliente: {{ pedido.clienteNome }}</p>
+                    <div class="grid grid-cols-3 gap-3 text-center pt-2 border-t border-gray-600">
+                        <div>
+                            <p class="text-xs text-gray-400">Total</p>
+                            <p class="text-lg font-bold text-yellow-400">R$ {{ valorTotalPedido.toFixed(2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400">Pago Antes</p>
+                            <p class="text-lg font-bold text-gray-300">R$ {{ valorPagoAnterior.toFixed(2) }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400">Falta Pagar</p>
+                            <p class="text-lg font-bold" :class="valorRestante > 0 ? 'text-red-400' : 'text-green-400'">
+                                R$ {{ valorRestante.toFixed(2) }}
+                            </p>
+                        </div>
                     </div>
                 </div>
+
+                <h3 class="text-xl font-bold text-white mt-4 border-b border-gray-700 pb-2">Registrar Novo Pagamento</h3>
+                
+                <div class="bg-gray-700 p-4 rounded-xl shadow-lg space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Forma de Pagamento</label>
+                            <select v-model="novoPagamento.forma" class="w-full p-2 bg-gray-600 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500">
+                                <option v-for="forma in formasDisponiveis" :key="forma" :value="forma">{{ forma }}</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-1">Valor (R$)</label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                v-model.number="novoPagamento.valor"
+                                class="w-full p-2 bg-gray-600 border border-gray-600 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500"
+                            >
+                        </div>
+                    </div>
+
+                    <button @click="adicionarPagamento" 
+                        class="w-full py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        :disabled="novoPagamento.valor <= 0">
+                        Adicionar à Lista
+                    </button>
+                </div>
+
+                <div v-if="pagamentosAtuais.length > 0" class="mt-4">
+                    <h4 class="text-lg font-semibold text-white mb-2">Pagamentos a Registrar ({{ pagamentosAtuais.length }})</h4>
+                    <ul class="space-y-2">
+                        <li v-for="(p, index) in pagamentosAtuais" :key="index" class="flex justify-between items-center bg-gray-700 p-3 rounded-lg shadow-md">
+                            <span class="text-gray-300">{{ p.forma }}</span>
+                            <span class="text-white font-bold">R$ {{ p.valor.toFixed(2) }}</span>
+                            <button @click="removerPagamento(index)" class="text-red-400 hover:text-red-500 transition">
+                                <i class="fi fi-rr-trash text-base"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
+                <div v-if="valorRestante <= 0 && pagamentosAtuais.length > 0" class="mt-4 p-3 bg-yellow-600 rounded-lg text-white font-semibold text-center">
+                    Atenção: O valor pago ultrapassa o valor restante.
+                </div>
             </div>
 
-            <button @click="salvarPagamento" :disabled="pagamentosAtuais.length === 0"
-                class="w-full py-3 rounded-lg font-semibold transition duration-150 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 cursor-pointer">
-                Registrar {{ pagamentosAtuais.length }} Pagamento(s)
-            </button>
-            <p v-if="podeQuitar" class="text-xs text-green-400 text-center mt-2">O pedido será automaticamente marcado como **CONCLUÍDO**.</p>
+            <div class="mt-6 pt-4 border-t border-gray-700 flex justify-between items-center">
+                <span class="text-lg font-bold" :class="valorRestante <= 0 ? 'text-green-400' : 'text-red-400'">
+                    Novo Total Pago: R$ {{ valorTotalPago.toFixed(2) }}
+                </span>
+                
+                <button @click="salvarPagamento"
+                    :disabled="pagamentosAtuais.length === 0"
+                    class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    Registrar Pagamento(s)
+                </button>
+            </div>
         </div>
     </div>
 </template>

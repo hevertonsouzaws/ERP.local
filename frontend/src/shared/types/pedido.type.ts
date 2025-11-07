@@ -35,6 +35,6 @@ export interface Pedido {
     status: PedidoStatus; 
     dataCriacao: string;
     pagamentos: PagamentoRegistro[];
-    statusPagamento: PagamentoRegistro[];
-    valorPago: number; 
+    valorPago: number;
+    descontoPorcentagem: number; 
 }

@@ -1,0 +1,19 @@
+import type { FormaPagamento } from "./pedido.type";
+
+export interface MetricasFinanceiras {
+    receitaTotal: number;
+    valorPagoEmPedidos: number;
+    valorPendenteEmPedidos: number;
+    pedidosConcluidos: number;
+    pedidosPendentes: number;
+}
+
+export interface TransacaoFinanceira {
+    id: string;
+    data: string; // ISO string
+    descricao: string;
+    tipo: 'RECEITA' | 'DESPESA';
+    valor: number;
+    referencia: string; 
+    metodoPagamento: FormaPagamento;
+}

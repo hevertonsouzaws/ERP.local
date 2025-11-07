@@ -1,16 +1,16 @@
 <template>
-    <div class="overflow-y-auto rounded-md w-full flex justify-between items-center flex-wrap gap-y-4 ">
+    <div class="overflow-y-auto rounded-md w-full flex justify-between items-center flex-wrap gap-y-2">
         <div v-for="service in services" :key="service.uuid"
-            class="flex justify-between items-center p-6 rounded-xl w-[48%] border border-gray-400">
+            class="flex flex-col md:flex-row justify-between items-center gap-4 p-4 rounded-xl w-full border border-gray-500">
 
-            <p class="text-sm font-medium max-w-[100%] truncate">{{ service.name }} (R$ {{
+            <p class="text-base max-w-full truncate">{{ service.name }} (R$ {{
                 service.defaultPrice.toFixed(2) }})</p>
 
             <div class="flex space-x-2">
                 <button @click="$emit('edit', service)"
-                    class="bg-gray-900 text-xs text-white hover:text-blue-500 transition border p-2 rounded-lg">Editar</button>
+                    class="bg-gray-900 text-xs text-white hover:bg-blue-800 transition border py-2 p-4 rounded-lg">Editar</button>
                 <button @click="handleDelete(service.uuid)"
-                    class="text-xs text-white hover:text-red-500 transition border p-2 rounded-lg">Excluir</button>
+                    class="text-xs text-white hover:bg-red-800 transition border py-2 p-4 rounded-lg">Excluir</button>
             </div>
         </div>
         <div v-if="services && services.length === 0" class="p-3 text-center text-gray-500">Nenhum serviço cadastrado.
@@ -28,7 +28,6 @@ const props = defineProps<{
 
 const emit = defineEmits(['edit']);
 
-// Instancia a Store
 const serviceStore = useServiceStore();
 
 async function handleDelete(uuid: string) {

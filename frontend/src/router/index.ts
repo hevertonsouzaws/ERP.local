@@ -3,8 +3,8 @@ import Home from '@/pages/HomePage.vue';
 import ClientePage from '@/pages/ClientPage.vue';
 import PedidosPage from '@/pages/OrdersPage.vue';
 import BackupPage from '@/pages/BackupPage.vue';
-import Printer from '@/pages/Printer.vue';
 import ServiceCatologPage from '@/pages/ServiceCatologPage.vue';
+import FinancesPage from '@/pages/FinancesPage.vue';
 
 const router = createRouter({
   history: createWebHashHistory(), 
@@ -33,6 +33,11 @@ const router = createRouter({
       path: '/backup',
       name: 'backup',
       component: BackupPage,
+    },
+    {
+      path: '/financas',
+      name: 'financas',
+      component: FinancesPage,
     },
   ],
 });

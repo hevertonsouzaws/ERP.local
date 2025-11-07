@@ -45,31 +45,31 @@ function closeGarmentModal() {
 
 <template>
     <div class="p-5 max-w-full mx-auto">
-        <div class="border border-gray-500 rounded-lg flex justify-between items-center gap-10 p-4">
+        <div class="border border-gray-500 rounded-lg flex flex-col lg:flex-row justify-between items-center gap-10 p-4">
             <div class="w-full">
-                <h1 class="text-white text-xl">Gerencie os tipos de peças de roupa e os serviços da loja.
+                <h1 class="text-white text-lg">Gerencie os tipos de peças de roupa e os serviços da loja.
                 </h1>
             </div>
-            <div class="flex gap-10 w-[30%]">
+            <div class="flex gap-10 w-[100%] 2xl:w-[40%]">
                 <button @click="openServiceModal(null)"
-                    class="w-full border border-gray-500 text-white py-3 rounded-xl hover:bg-blue-900 hover:border-blue-900 transition duration-150">
+                    class="w-full border border-gray-500 text-white py-2 rounded-xl hover:bg-blue-900 hover:border-blue-900 transition duration-150">
                     Adicionar Serviço
                 </button>
 
                 <button @click="openGarmentModal(null)"
-                    class="w-full border border-gray-500 text-white py-3 rounded-xl hover:bg-green-900 hover:border-green-900  transition duration-150">
+                    class="w-full border border-gray-500 text-white py-2 rounded-xl hover:bg-green-900 hover:border-green-900  transition duration-150">
                     Adicionar Peça
                 </button>
             </div>
         </div>
 
-        <div class="flex flex-col md:flex-row gap-8 mt-10 rounded-lg">
-            <section class="flex-1 p-4 rounded-lg shadow-md border border-gray-500">
+        <div class="flex flex-col xl:flex-row gap-8 mt-10 rounded-lg">
+            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full">
                 <h3 class="text-xl text-center font-semibold mb-4 border-b border-gray-500 pb-2">Serviços de Costura</h3>
                 <ListService :services="catalogStore.services" @edit="openServiceModal" />
             </section>
 
-            <section class="flex-1 p-4 rounded-lg shadow-md border border-gray-500">
+            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full">
                 <h3 class="text-xl text-center font-semibold mb-4 border-b border-gray-500 pb-2">Tipos de Peças</h3>
                 <ListGarmentType :garment-types="catalogStore.garmentTypes" @edit="openGarmentModal" />
             </section>

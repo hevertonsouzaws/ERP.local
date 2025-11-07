@@ -11,7 +11,6 @@ export const useClienteStore = defineStore('clientes', () => {
 
     async function carregarClientes() {
         try {
-            // Note que clientes agora é Table<Cliente, string>
             clientes.value = await db.clientes.toArray();
             carregando.value = true;
         } catch (error) {
@@ -23,7 +22,7 @@ export const useClienteStore = defineStore('clientes', () => {
         try {
             const clienteParaSalvar: Cliente = {
                 ...toRaw(novoClienteData),
-                uuid: generateUUID(), // GERAÇÃO DO UUID
+                uuid: generateUUID(), 
                 nome: toCaps(novoClienteData.nome),
                 telefone: novoClienteData.telefone ? formatarTelefone(novoClienteData.telefone) : '',
             };

@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
+import { ref, computed, toRaw } from "vue";
 import type { Pedido, PedidoItemPeca, PedidoStatus, FormaPagamento, PagamentoRegistro } from "@/shared/types/pedido.type";
 import type { IGarmentType, IService } from "@/shared/types/catalog.type";
 import type { Cliente } from "@/shared/types/cliente.type";
@@ -14,7 +14,7 @@ interface DraftOrder {
     pagamentos: PagamentoRegistro[];
 }
 
-function calcularValorTotalItens(itens: PedidoItemPeca[]): number {
+function calcularValorSubtotalItens(itens: PedidoItemPeca[]): number {
     return itens.reduce((totalGeral, peca) => {
         const subtotalPeca = peca.servicos.reduce((totalPeca, servico) => {
             return totalPeca + (servico.quantidade * servico.unitPrice);
@@ -32,9 +32,15 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         pagamentos: [],
     });
 
-    const linhaAtual = computed(() => rascunho.value.itens.length + 1);
+    const descontoPorcentagem = ref(0); // Movido para fora do ref<DraftOrder>
 
-    const valorTotalPedido = computed(() => calcularValorTotalItens(rascunho.value.itens));
+    const subtotal = computed(() => calcularValorSubtotalItens(rascunho.value.itens));
+
+    const valorTotalPedido = computed(() => {
+        const total = subtotal.value;
+        const percentualDesconto = descontoPorcentagem.value / 100;
+        return total * (1 - percentualDesconto);
+    });
 
     const valorTotalPago = computed(() => {
         return rascunho.value.pagamentos.reduce((total, p) => total + p.valor, 0);
@@ -44,6 +50,8 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         return Math.max(0, valorTotalPedido.value - valorTotalPago.value);
     });
 
+    const linhaAtual = computed(() => rascunho.value.itens.length + 1);
+
     function resetDraft() {
         rascunho.value = {
             cliente: null,
@@ -52,6 +60,21 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
             itens: [],
             pagamentos: [],
         };
+        descontoPorcentagem.value = 0;
+    }
+
+    function loadDraftFromPedido(pedido: Pedido) {
+        rascunho.value.cliente = { 
+            uuid: 'EDITING',
+            nome: pedido.clienteNome, 
+            telefone: '' 
+        } as Cliente;
+
+        rascunho.value.dataEntrega = pedido.dataEntrega;
+        rascunho.value.horarioEntrega = pedido.horarioEntrega || '';
+        rascunho.value.itens = JSON.parse(JSON.stringify(toRaw(pedido.itens)));
+        rascunho.value.pagamentos = JSON.parse(JSON.stringify(toRaw(pedido.pagamentos))); // Carrega pagamentos
+        descontoPorcentagem.value = pedido.descontoPorcentagem;
     }
 
     function setCliente(cliente: Cliente) {
@@ -88,7 +111,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
             p.lineNumber = index + 1;
         });
     }
-    
+
     function removeServiceFromGarment(garmentUuid: string, serviceUuid: string) {
         const peca = rascunho.value.itens.find(p => p.uuid === garmentUuid);
         if (peca) {
@@ -114,27 +137,30 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         }
 
         const statusOperacionalInicial: PedidoStatus = 'PENDENTE';
-        
+
         return {
             clienteUuidd: rascunho.value.cliente.uuid,
             clienteNome: rascunho.value.cliente.nome,
             dataEntrega: rascunho.value.dataEntrega,
             horarioEntrega: rascunho.value.horarioEntrega,
-            itens: rascunho.value.itens, 
+            itens: JSON.parse(JSON.stringify(toRaw(rascunho.value.itens))),
             status: statusOperacionalInicial,
             dataCriacao: getDataHojeString(),
-            pagamentos: rascunho.value.pagamentos,
+            pagamentos: JSON.parse(JSON.stringify(toRaw(rascunho.value.pagamentos))),
             valorPago: valorTotalPago.value,
-        } as Omit<Pedido, 'uuid'>; 
+            descontoPorcentagem: descontoPorcentagem.value,
+        };
     }
 
     return {
         rascunho,
+        descontoPorcentagem,
         valorTotalPedido,
         valorTotalPago,
         valorRestante,
         linhaAtual,
         resetDraft,
+        loadDraftFromPedido,
         setCliente,
         addGarment,
         removeGarment,

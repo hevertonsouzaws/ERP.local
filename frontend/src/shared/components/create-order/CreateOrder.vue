@@ -1,3 +1,72 @@
+<script setup lang="ts">
+import ClientSelector from './ClientSelector.vue';
+import ItemAdder from './ItemAdder.vue';
+import PaymentForm from './PaymentForm.vue';
+import DateSelector from './DateSelector.vue';
+
+import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
+import { useClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
+import { useItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
+import { usePaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLogic.helper';
+import { useDateLogic } from '@/shared/helpers/create-order/dateLogic';
+import { usePedidoStore } from '@/shared/stores/pedido.store';
+import { useServiceStore } from '@/shared/stores/catolog.store';
+import { useDiscountLogic } from '@/shared/helpers/create-order/discountLogic'; 
+import { showToast } from '@/shared/helpers/toastState';
+import DescontoForm from '../orders-page/DescontoForm.vue';
+
+const draftStore = useDraftOrderStore();
+const clientLogic = useClientFormLogic();
+const itemLogic = useItemManagementLogic();
+const paymentLogic = usePaymentFormLogic();
+const dateLogic = useDateLogic();
+const pedidoStore = usePedidoStore();
+const catalogStore = useServiceStore();
+const discountLogic = useDiscountLogic();
+
+catalogStore.loadCatalog();
+
+const emit = defineEmits(['close']);
+
+const finalizarPedido = async () => {
+
+    if (!clientLogic.clienteSelecionado.value) {
+        showToast('Selecione um cliente antes de finalizar.', 'warning');
+        return;
+    }
+    if (itemLogic.itensDoPedido.value.length === 0) {
+        showToast('Adicione itens ao pedido antes de finalizar.', 'warning');
+        return;
+    }
+
+    if (paymentLogic.valorTotalPedido.value <= 0) {
+        showToast('O valor total do pedido deve ser maior que zero após o desconto.', 'warning');
+        return;
+    }
+
+    try {
+        const pedidoParaSalvar = draftStore.toPedidoForSave();
+        const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
+
+        if (uuidSalvo) {
+            showToast(`Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`, 'success');
+
+            draftStore.resetDraft();
+            emit('close');
+
+        } else {
+            console.error('Falha ao salvar o pedido: UUID não retornado.');
+            showToast('Falha ao salvar o pedido. Tente novamente.', 'error');
+        }
+
+    } catch (error) {
+        console.error('Erro fatal ao finalizar pedido:', error);
+        showToast(`Erro ao salvar: Ocorreu um erro desconhecido.`, 'error');
+    }
+};
+
+</script>
+
 <template>
     <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
         <div class="bg-gray-800 rounded-xl shadow-2xl w-full lg:max-w-7xl p-6 h-[90vh] flex flex-col">
@@ -23,8 +92,9 @@
                     <div class="col-span-12 lg:col-span-4 space-y-6">
                         <DateSelector :date-logica="dateLogic" />
                         <PaymentForm :payment-logica="paymentLogic" />
+                        <DescontoForm :discount-logica="discountLogic" />
                     </div>
-
+    
                 </div>
             </div>
 
@@ -38,68 +108,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import ClientSelector from './ClientSelector.vue';
-import ItemAdder from './ItemAdder.vue';
-import PaymentForm from './PaymentForm.vue';
-import DateSelector from './DateSelector.vue';
-
-import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
-import { useClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
-import { useItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
-import { usePaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLogic.helper';
-import { useDateLogic } from '@/shared/helpers/create-order/dateLogic';
-import { usePedidoStore } from '@/shared/stores/pedido.store';
-import { useServiceStore } from '@/shared/stores/catolog.store';
-
-const draftStore = useDraftOrderStore();
-const clientLogic = useClientFormLogic();
-const itemLogic = useItemManagementLogic();
-const paymentLogic = usePaymentFormLogic();
-const dateLogic = useDateLogic();
-const pedidoStore = usePedidoStore();
-const catalogStore = useServiceStore();
-
-catalogStore.loadCatalog();
-
-const emit = defineEmits(['close']);
-
-const finalizarPedido = async () => {
-
-    if (!clientLogic.clienteSelecionado.value) {
-        alert('Selecione um cliente antes de finalizar.');
-        return;
-    }
-    if (itemLogic.itensDoPedido.value.length === 0) {
-        alert('Adicione itens ao pedido antes de finalizar.');
-        return;
-    }
-
-    if (paymentLogic.valorTotalPedido.value <= 0) {
-        alert('O valor total do pedido deve ser maior que zero.');
-        return;
-    }
-
-    try {
-        const pedidoParaSalvar = draftStore.toPedidoForSave();
-        const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
-
-        if (uuidSalvo) {
-            alert(`✅ Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`);
-
-            draftStore.resetDraft();
-            emit('close');
-
-        } else {
-            console.error('Falha ao salvar o pedido: UUID não retornado.');
-            alert('❌ Falha ao salvar o pedido. Tente novamente.');
-        }
-
-    } catch (error) {
-        console.error('Erro fatal ao finalizar pedido:', error);
-        alert(`❌ Erro ao salvar: {'Erro desconhecido.'}`);
-    }
-};
-
-</script>

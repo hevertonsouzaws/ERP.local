@@ -2,14 +2,22 @@
 import { onMounted, ref, computed } from 'vue';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import type { Pedido, PedidoStatus } from '@/shared/types/pedido.type';
+import { showToast } from '@/shared/helpers/toastState';
 import ReceberPagamentoModal from '@/shared/components/orders-page/ReceberPagamentoModal.vue';
+import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue'; 
 import PedidoCard from '@/shared/components/orders-page/PedidoCard.vue';
 import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 
 const store = usePedidoStore();
 const filtroStatus = ref<PedidoStatus | 'TODOS'>('TODOS');
+
 const pedidoSelecionado = ref<Pedido | null>(null);
 const mostrarModalPagamento = ref(false);
+
+const pedidoParaEditar = ref<Pedido | null>(null);
+const mostrarModalEdicao = ref(false);
+
+const isModalOpen = ref(false);
 
 onMounted(() => {
     if (!store.carregando) {
@@ -33,14 +41,15 @@ const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus, valorTotal:
     const valorRestante = valorTotal - pedido.valorPago;
 
     if (novoStatus === 'CONCLUIDO' && valorRestante > 0) {
-        if (!confirm(`O pedido ${pedido.uuid.substring(0, 8)} ainda tem R$ ${valorRestante.toFixed(2)} pendentes. Deseja marcar como CONCLUÍDO mesmo assim?`)) {
-            return;
-        }
+        showToast(`Atenção! O pedido ${pedido.uuid.substring(0, 8)} tem R$ ${valorRestante.toFixed(2)} pendentes. Concluindo...`, 'warning');
     }
 
-    if (confirm(`Deseja realmente mudar o status do pedido ${pedido.uuid.substring(0, 8)} para ${novoStatus}?`)) {
+    try {
         await store.atualizarStatusPedido(pedido.uuid, novoStatus);
-        alert(`Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`);
+        showToast(`Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`, 'success');
+    } catch (error) {
+        console.error('Erro ao atualizar status:', error);
+        showToast('Erro ao atualizar status do pedido. Verifique o console.', 'error');
     }
 }
 
@@ -58,14 +67,26 @@ const handlePagamentoSucesso = () => {
     fecharModalPagamento();
 };
 
-const isModalOpen = ref(false);
+const abrirModalEdicao = (pedido: Pedido) => {
+    pedidoParaEditar.value = pedido;
+    mostrarModalEdicao.value = true;
+};
+
+const fecharModalEdicao = () => {
+    mostrarModalEdicao.value = false;
+    pedidoParaEditar.value = null; 
+};
+
+const handleEdicaoSucesso = () => {
+    fecharModalEdicao();
+};
 </script>
 
 <template>
     <div class="min-h-screen text-white py-2 p-8 w-full">
 
         <div class="mb-6 flex justify-between items-center p-4 border border-gray-500 rounded-xl shadow-xl">
-            <p class="text-xl font-semibold">Total de Pedidos: {{ store.pedidos.length }}</p>
+            <p class="text-base font-semibold">Total de Pedidos: {{ store.pedidos.length }}</p>
 
             <div class="flex items-center space-x-3">
                 <label class="text-gray-200">Filtrar por Status:</label>
@@ -79,21 +100,27 @@ const isModalOpen = ref(false);
         </div>
 
         <div class="rounded-xl shadow-2xl">
-            <p v-if="!store.carregando" class="text-gray-200 flex items-center">
-                <i class="fi fi-rr-spinner animate-spin mr-2"></i> Carregando pedidos...
-            </p>
-            <p v-else-if="pedidosFiltrados.length === 0" class="text-gray-500 text-center py-10">
-                Nenhum pedido encontrado com o filtro atual.
-            </p>
-
-            <div v-else class="flex flex-row justify-left flex-wrap gap-5">
+            <div  class="flex flex-row justify-left flex-wrap gap-5">
                 <PedidoCard v-for="pedido in pedidosFiltrados" :key="pedido.uuid" :pedido="pedido"
-                    @change-status="mudarStatus" @open-payment-modal="abrirModalPagamento" />
+                    @change-status="mudarStatus" 
+                    @open-payment-modal="abrirModalPagamento"
+                    @open-edit-modal="abrirModalEdicao" /> 
             </div>
         </div>
 
-        <ReceberPagamentoModal v-if="mostrarModalPagamento" :pedido="pedidoSelecionado" @close="fecharModalPagamento"
-            @payment-success="handlePagamentoSucesso" />
+        <ReceberPagamentoModal 
+            v-if="mostrarModalPagamento && pedidoSelecionado" 
+            :pedido="pedidoSelecionado" 
+            @close="fecharModalPagamento"
+            @payment-success="handlePagamentoSucesso" 
+        />
+
+        <EditOrderModal
+            v-if="mostrarModalEdicao && pedidoParaEditar"
+            :pedido="pedidoParaEditar"
+            @close="fecharModalEdicao"
+            @edit-success="handleEdicaoSucesso"
+        />
 
         <button @click="isModalOpen = true"
             class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
@@ -101,5 +128,6 @@ const isModalOpen = ref(false);
         </button>
 
         <CreateOrder v-if="isModalOpen" @close="isModalOpen = false" />
+        
     </div>
 </template>
