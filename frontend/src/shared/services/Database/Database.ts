@@ -8,7 +8,6 @@ export class AppDB extends Dexie {
     clientes!: Table<Cliente, string>;
     pedidos!: Table<Pedido, string>;
     metricas!: Table<Metrica, string>;
-    // NOVO: Tabelas de Catálogo
     garmentTypes!: Table<IGarmentType, string>; 
     services!: Table<IService, string>;
 

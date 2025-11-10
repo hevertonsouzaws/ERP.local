@@ -26,11 +26,11 @@ const itensFormatados = computed(() => {
 
 const getColorClass = (index: number) => {
     const colors = [
-        'bg-blue-500', 
-        'bg-green-500', 
-        'bg-yellow-500', 
-        'bg-purple-500', 
-        'bg-red-500',
+        'bg-blue-600', 
+        'bg-green-600', 
+        'bg-yellow-600', 
+        'bg-purple-600', 
+        'bg-red-600',
     ];
     return colors[index % colors.length];
 };
@@ -38,9 +38,9 @@ const getColorClass = (index: number) => {
 </script>
 
 <template>
-    <div class="bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700 h-full">
+    <div class="p-6 rounded-xl shadow-lg border border-gray-500 h-full">
         <h3 class="text-xl font-bold text-white mb-4 flex items-center">
-            <i class="fi fi-rr-chart-pie-alt mr-2 text-blue-400"></i>
+            <i class="fi fi-rr-chart-pie-alt mr-2 text-white"></i>
             Distribuição por Forma de Pagamento
         </h3>
         
@@ -62,11 +62,15 @@ const getColorClass = (index: number) => {
                 </div>
             </div>
              <div class="pt-4 mt-4 border-t border-gray-700">
-                <div class="flex justify-between text-lg font-bold text-green-400">
+                <div class="flex justify-center gap-4 text-lg font-bold text-white">
                     <span>Total Recebido:</span>
                     <span>R$ {{ totalRecebido.toFixed(2).replace('.', ',') }}</span>
                 </div>
             </div>
+        </div>
+
+        <div class="mt-4">
+            <img src="https://cdn-icons-gif.flaticon.com/9908/9908555.gif" alt="" class="w-[80px] h-[80px] rounded-full m-auto saturate-0">
         </div>
     </div>
 </template>

@@ -27,7 +27,6 @@ export function useClientFormLogic() {
 
     const cadastrarESelecionarCliente = async () => {
         if (!novoClienteData.value.nome) {
-            // Substituir 'alert' por modal de UI na implementação final.
             console.error('O nome do novo cliente é obrigatório.'); 
             return;
         }

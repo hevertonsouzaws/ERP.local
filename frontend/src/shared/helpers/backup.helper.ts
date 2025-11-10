@@ -2,6 +2,7 @@ import { db } from '@/shared/services/Database/Database';
 import type { Cliente } from '@/shared/types/cliente.type';
 import type { Pedido } from '@/shared/types/pedido.type';
 import { generateUUID } from './uuid.helper';
+import { showToast } from './toastState';
 
 interface ClienteBackup {
     clientes: Cliente[];
@@ -30,6 +31,7 @@ function iniciarDownload(data: object, filenamePrefix: string): void {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+    showToast('✅ Download iniciado com sucesso!', 'success');
 }
 
 export async function exportarBackupClientes(): Promise<void> {
@@ -42,8 +44,7 @@ export async function exportarBackupClientes(): Promise<void> {
         };
         iniciarDownload(backupData, 'backup_clientes');
     } catch (error) {
-        console.error('Erro ao exportar backup de clientes:', error);
-        throw new Error('Falha ao exportar clientes. Verifique o console.');
+        showToast('❌ Falha ao exportar clientes. Verifique o acesso ao IndexedDB.', 'error');
     }
 }
 
@@ -57,8 +58,7 @@ export async function exportarBackupPedidos(): Promise<void> {
         };
         iniciarDownload(backupData, 'backup_pedidos');
     } catch (error) {
-        console.error('Erro ao exportar backup de pedidos:', error);
-        throw new Error('Falha ao exportar pedidos. Verifique o console.');
+        showToast('❌ Falha ao exportar pedidos. Verifique o acesso ao IndexedDB.', 'error');
     }
 }
 
@@ -70,7 +70,9 @@ export async function importarBackupClientes(file: File): Promise<void> {
                 const result = event.target?.result as string;
                 const backupData: ClienteBackup = JSON.parse(result);
 
-                if (!backupData.clientes) throw new Error('Arquivo de clientes inválido.');
+                if (!backupData.clientes || !Array.isArray(backupData.clientes)) {
+                    throw new Error('Estrutura de arquivo de clientes inválida.');
+                }
 
                 await db.transaction('rw', db.clientes, async () => {
                     for (const clienteDoArquivo of backupData.clientes) {
@@ -91,13 +93,18 @@ export async function importarBackupClientes(file: File): Promise<void> {
                         }
                     }
                 });
+                showToast('Clientes importados com sucesso!', 'success');
                 resolve();
             } catch (e) {
-                console.error('Erro ao processar o arquivo de clientes:', e);
-                reject('Formato de arquivo ou dados de clientes inválidos.');
+                const errorMessage = (e as Error).message || 'Formato de arquivo ou dados de clientes inválidos.';
+                showToast(`❌ Erro ao importar clientes: ${errorMessage}`, 'error');
+                reject(errorMessage); 
             }
         };
-        reader.onerror = () => reject('Erro ao ler o arquivo de clientes.');
+        reader.onerror = () => {
+            showToast('❌ Erro ao ler o arquivo de clientes.', 'error');
+            reject('Erro ao ler o arquivo de clientes.');
+        };
         reader.readAsText(file);
     });
 }
@@ -110,24 +117,35 @@ export async function importarBackupPedidos(file: File): Promise<void> {
                 const result = event.target?.result as string;
                 const backupData: PedidoBackup = JSON.parse(result);
 
-                if (!backupData.pedidos) throw new Error('Arquivo de pedidos inválido.');
+                if (!backupData.pedidos || !Array.isArray(backupData.pedidos)) {
+                    throw new Error('Estrutura de arquivo de pedidos inválida.');
+                }
 
                 const totalClientes = await db.clientes.count();
                 if (totalClientes === 0) {
-                    reject('Não há clientes no banco de dados. Importe os clientes primeiro.');
+                    const msg = 'Não há clientes no banco de dados. Importe os clientes primeiro.';
+                    showToast(`⚠️ ${msg}`, 'warning');
+                    reject(msg);
                     return;
                 }
 
                 await db.transaction('rw', db.pedidos, async () => {
                     await db.pedidos.bulkPut(backupData.pedidos);
                 });
+
+                showToast('Pedidos importados com sucesso!', 'success');
                 resolve();
-            } catch (e) {
-                console.error('Erro ao processar o arquivo de pedidos:', e);
-                reject('Formato de arquivo ou dados de pedidos inválidos.');
+
+            } catch (error) {
+                const errorMessage = (error as Error).message || 'Formato de arquivo ou dados de pedidos inválidos.';
+                showToast(`❌ Erro ao importar pedidos: ${errorMessage}`, 'error');
+                reject(errorMessage);
             }
         };
-        reader.onerror = () => reject('Erro ao ler o arquivo de pedidos.');
+        reader.onerror = () => {
+            showToast('❌ Erro ao ler o arquivo de pedidos.', 'error');
+            reject('Erro ao ler o arquivo de pedidos.');
+        };
         reader.readAsText(file);
     });
 }

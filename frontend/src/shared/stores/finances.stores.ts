@@ -27,7 +27,7 @@ export const useFinanceiroStore = defineStore('financeiro', {
             return transacoes.sort((a, b) => new Date(b.data).getTime() - new Date(a.data).getTime());
         },
 
-         distribuicaoPagamentos(): Record<string, number> {
+        distribuicaoPagamentos(): Record<string, number> {
             return this.transacoesPedidos.reduce((acc, transacao) => {
                 if (transacao.tipo === 'RECEITA') {
                     const metodo = transacao.metodoPagamento.toUpperCase() || 'OUTRO';
@@ -43,7 +43,7 @@ export const useFinanceiroStore = defineStore('financeiro', {
             const pedidosPendentes = pedidoStore.pedidos.filter(p => p.status === 'PENDENTE').length;
             const valorPagoEmPedidos = this.transacoesPedidos.reduce((acc, t) => acc + t.valor, 0);
             const receitaTotalGeral = pedidoStore.pedidos.reduce((acc, p) => acc + pedidoStore.getValorTotalPedido(p), 0);
-            const valorPendenteEmPedidos = receitaTotalGeral - valorPagoEmPedidos;
+            const valorPendenteEmPedidos = Math.max(0, receitaTotalGeral - valorPagoEmPedidos);
 
 
             return {
@@ -56,6 +56,6 @@ export const useFinanceiroStore = defineStore('financeiro', {
         }
     },
     actions: {
-       
+
     }
 });

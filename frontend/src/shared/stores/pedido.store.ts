@@ -5,6 +5,7 @@ import type { Pedido, PedidoStatus, PagamentoRegistro, PedidoItemPeca } from "..
 import type { Metrica, TotalPorFormaPagamento } from "../types/metrica.type";
 import { getMesAnoAtual, getDataHojeString } from "@/shared/helpers/data.helper";
 import { generateUUID } from "../helpers/uuid.helper";
+import { showToast } from "@/shared/helpers/toastState";
 
 function calcularValorTotalPedido(pedido: Pedido): number {
     const subtotal = pedido.itens.reduce((totalPeca, peca: PedidoItemPeca) => {
@@ -41,7 +42,7 @@ export const usePedidoStore = defineStore('pedidos', () => {
             pedidos.value = await db.pedidos.toArray();
             carregando.value = true;
         } catch (error) {
-            console.error('Erro ao carregar pedidos:', error);
+            showToast('Erro ao carregar pedidos. Verifique a base de dados.', 'error');
         }
     }
 
@@ -57,18 +58,20 @@ export const usePedidoStore = defineStore('pedidos', () => {
         };
 
         for (const pedido of pedidos.value) {
-            const valorTotal = calcularValorTotalPedido(pedido);
+            const valorTotalLiquido = calcularValorTotalPedido(pedido);
 
             receitaTotal += pedido.valorPago;
 
-            const restante = valorTotal - pedido.valorPago;
+            const restante = valorTotalLiquido - pedido.valorPago;
+
             if (restante > 0 && pedido.status !== 'CANCELADO') {
                 valorPendente += restante;
             }
-
             for (const pagamento of pedido.pagamentos) {
                 if (pagamento.forma in totaisPorForma) {
-                    totaisPorForma[pagamento.forma] += pagamento.valor;
+                    totaisPorForma[pagamento.forma as keyof TotalPorFormaPagamento] += pagamento.valor;
+                } else {
+                    totaisPorForma['OUTRO'] += pagamento.valor;
                 }
             }
 
@@ -120,9 +123,11 @@ export const usePedidoStore = defineStore('pedidos', () => {
             await carregarPedidos();
             await calcularMetricasGerais();
 
+            showToast(`✅ Pedido #${uuid.substring(0, 8)} criado com sucesso!`, 'success');
+
             return uuid;
         } catch (error) {
-            console.error('Erro ao adicionar pedido ao Dexie:', error);
+            showToast('Erro ao adicionar pedido.', 'error');
         }
     }
 
@@ -148,7 +153,10 @@ export const usePedidoStore = defineStore('pedidos', () => {
     async function atualizarStatusPedido(pedidoUuid: string, novoStatus: PedidoStatus) {
         try {
             const pedido = pedidos.value.find(p => p.uuid === pedidoUuid);
-            if (!pedido) return;
+            if (!pedido) {
+                showToast('Pedido não encontrado para atualização de status.', 'warning');
+                return;
+            }
 
             const valorPedido = calcularValorTotalPedido(pedido);
 
@@ -167,9 +175,10 @@ export const usePedidoStore = defineStore('pedidos', () => {
             }
 
             await calcularMetricasGerais();
+            showToast(`Status do pedido #${pedidoUuid.substring(0, 8)} atualizado para ${novoStatus}!`, 'warning');
 
         } catch (error) {
-            console.error('Erro ao atualizar status ou métricas:', error);
+            showToast('Erro ao atualizar status do pedido.', 'error');
         }
     }
 
@@ -189,18 +198,13 @@ export const usePedidoStore = defineStore('pedidos', () => {
                 descontoPorcentagem: novoDescontoPorcentagem
             };
 
-            const novoValorTotal = calcularValorTotalPedido(novoPedidoCalculo);
             const novoValorPago = novosPagamentos.reduce((total, p) => total + p.valor, 0);
-
-            if (novoValorPago > novoValorTotal) {
-                console.warn(`O valor pago (${novoValorPago}) excede o valor total do pedido (${novoValorTotal}) após a edição e desconto.`);
-            }
 
             await db.pedidos.update(pedidoUuid, {
                 itens: JSON.parse(JSON.stringify(toRaw(novosItens))),
                 pagamentos: JSON.parse(JSON.stringify(toRaw(novosPagamentos))),
                 valorPago: novoValorPago,
-                descontoPorcentagem: novoDescontoPorcentagem, // 🎯 NOVO: Persistindo o desconto
+                descontoPorcentagem: novoDescontoPorcentagem,
             });
 
             const pedidoIndex = pedidos.value.findIndex(p => p.uuid === pedidoUuid);
@@ -212,9 +216,10 @@ export const usePedidoStore = defineStore('pedidos', () => {
             }
 
             await calcularMetricasGerais();
+            showToast(`Pedido #${pedidoUuid.substring(0, 8)} atualizado com sucesso!`, 'success');
 
         } catch (error) {
-            console.error(`Erro ao atualizar itens/pagamentos do pedido ${pedidoUuid}:`, error);
+            showToast(`Erro ao atualizar pedido #${pedidoUuid.substring(0, 8)}.`, 'error');
             throw error;
         }
     }

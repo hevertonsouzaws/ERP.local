@@ -46,7 +46,7 @@ watch(() => props.pedido, (newPedido) => {
         valorTotalPedido.value = parseFloat(valorComDesconto.toFixed(2));
         
         valorPagoAnterior.value = newPedido.valorPago;
-        pagamentosAtuais.value = []; // Limpa pagamentos novos ao trocar de pedido
+        pagamentosAtuais.value = []; 
         novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
     }
 }, { immediate: true });
@@ -55,7 +55,7 @@ const adicionarPagamento = () => {
     const valorPagar = parseFloat(novoPagamento.value.valor.toFixed(2));
 
     if (valorPagar <= 0) {
-        showToast('O valor a pagar deve ser maior que zero.', 'warning'); // 🎯 USANDO TOAST
+        showToast('O valor a pagar deve ser maior que zero.', 'warning'); 
         return;
     }
 
@@ -75,7 +75,7 @@ const removerPagamento = (index: number) => {
 
 const salvarPagamento = async () => {
     if (!props.pedido || pagamentosAtuais.value.length === 0) {
-        showToast('Nenhum pagamento novo para registrar.', 'warning'); // 🎯 USANDO TOAST
+        showToast('Nenhum pagamento novo para registrar.', 'warning'); 
         return;
     }
 
@@ -91,12 +91,12 @@ const salvarPagamento = async () => {
             novoValorPago,
         );
 
-        showToast(`Pagamento(s) registrado(s) com sucesso.`, 'success'); // 🎯 USANDO TOAST
+        showToast(`Pagamento(s) registrado(s) com sucesso.`, 'success'); 
         emit('payment-success');
         
     } catch (error) {
         console.error('Erro ao registrar pagamento:', error);
-        showToast('Houve um erro ao registrar o pagamento.', 'error'); // 🎯 USANDO TOAST
+        showToast('Houve um erro ao registrar o pagamento.', 'error'); 
     }
 };
 

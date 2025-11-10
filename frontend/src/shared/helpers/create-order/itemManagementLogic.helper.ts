@@ -3,6 +3,7 @@ import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import type { IGarmentType, IService } from '@/shared/types/catalog.type';
 import type { PedidoItemPeca } from '@/shared/types/pedido.type';
+import { showToast } from '../toastState';
 
 export function useItemManagementLogic() {
     const draftStore = useDraftOrderStore();
@@ -31,7 +32,7 @@ export function useItemManagementLogic() {
         const garment = garmentTypes.value.find(g => g.uuid === selectedGarmentTypeUuid.value);
         
         if (!garment) {
-            alert('Selecione um tipo de peça para adicionar.');
+            showToast('Selecione um tipo de peça para adicionar.', 'warning');
             return;
         }
 
@@ -48,11 +49,11 @@ export function useItemManagementLogic() {
         const peca = pecaSelecionadaParaServico.value;
 
         if (!peca) {
-            alert('Selecione uma peça na lista de itens para adicionar um serviço.');
+            showToast('Selecione uma peça na lista de itens para adicionar um serviço.', 'warning');
             return;
         }
         if (!service || quantity <= 0) {
-            alert('Selecione um serviço e uma quantidade válida.');
+            showToast('Selecione um serviço e uma quantidade válida.', 'warning');
             return;
         }
 

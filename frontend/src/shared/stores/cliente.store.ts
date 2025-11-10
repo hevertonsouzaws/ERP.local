@@ -4,6 +4,7 @@ import { db } from "../services/Database/Database";
 import type { Cliente } from "../types/cliente.type";
 import { toCaps, formatarTelefone } from "@/shared/helpers/data.helper";
 import { generateUUID } from "../helpers/uuid.helper";
+import { showToast } from "../helpers/toastState";
 
 export const useClienteStore = defineStore('clientes', () => {
     const clientes = ref<Cliente[]>([]);
@@ -14,7 +15,8 @@ export const useClienteStore = defineStore('clientes', () => {
             clientes.value = await db.clientes.toArray();
             carregando.value = true;
         } catch (error) {
-            console.error('Erro ao carregar clientes:', error);
+            showToast('Erro ao carregar clientes:', 'error');
+            throw error;
         }
     }
 
@@ -22,7 +24,7 @@ export const useClienteStore = defineStore('clientes', () => {
         try {
             const clienteParaSalvar: Cliente = {
                 ...toRaw(novoClienteData),
-                uuid: generateUUID(), 
+                uuid: generateUUID(),
                 nome: toCaps(novoClienteData.nome),
                 telefone: novoClienteData.telefone ? formatarTelefone(novoClienteData.telefone) : '',
             };
@@ -32,17 +34,18 @@ export const useClienteStore = defineStore('clientes', () => {
             return uuid;
 
         } catch (error) {
-            console.error('Erro ao adicionar cliente ao Dexie:', error);
+            showToast('Erro ao adicionar cliente ao Dexie:', 'error');
+            throw error;
         }
     }
 
 
-    async function atualizarCliente(uuid: string, dados: { nome: string; telefone: string}) {
+    async function atualizarCliente(uuid: string, dados: { nome: string; telefone: string }) {
         try {
-            await db.clientes.update(uuid, dados); 
+            await db.clientes.update(uuid, dados);
             await carregarClientes();
         } catch (error) {
-            console.error(`Erro ao atualizar cliente ${uuid}:`, error)
+            showToast(`Erro ao atualizar cliente ${uuid}:`, 'error');
             throw error;
         }
     }

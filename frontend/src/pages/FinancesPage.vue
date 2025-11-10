@@ -1,40 +1,37 @@
 <script setup lang="ts">
 import { useFinanceiroStore } from '@/shared/stores/finances.stores';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
-import FinancialMetricCard from '@/shared/components/finance-page/FinancialMetricCard.vue';
-import FinancialTransactionTable from '@/shared/components/finance-page/FinancialTransactionTable.vue';
-import PaymentDistributionCard from '@/shared/components/finance-page/Payments.vue'; 
-import { computed, onMounted } from 'vue';
+import FinancialMetricCard from '@/shared/components/finances-page/FinancialMetricCard.vue';
+import FinancialTransactionTable from '@/shared/components/finances-page/FinancialTransactionTable.vue';
+import PaymentDistributionCard from '@/shared/components/finances-page/Payments.vue'; 
+import { computed } from 'vue';
+import { formatNumberAsCurrency } from '@/shared/helpers/currency.helper';
+
+const pedidoStore = usePedidoStore();
+pedidoStore.carregarPedidos()
 
 const financeiroStore = useFinanceiroStore();
-const pedidoStore = usePedidoStore();
-
 const metricas = computed(() => financeiroStore.metricas);
 const transacoes = computed(() => financeiroStore.transacoesPedidos);
 const distribuicaoPagamentos = computed(() => financeiroStore.distribuicaoPagamentos); 
-
-
-const LIMITE_ALVO = 81.000; 
-
-const resultadoLimite = computed(() => metricas.value.valorPagoEmPedidos - LIMITE_ALVO);
-
-onMounted(() => {
-    pedidoStore.carregarPedidos();
+const LIMITE_ALVO = 81000; 
+const resultadoLimite = computed(() => LIMITE_ALVO - metricas.value.valorPagoEmPedidos );
+const limiteAlvoFormatado = computed(() => {
+    return formatNumberAsCurrency(LIMITE_ALVO)
 });
 </script>
 
 <template>
-    <div class="min-h-screen text-white py-2 p-8 w-full bg-gray-900">
+    <div class="min-h-screen text-white py-2 p-8 w-full">
         <h1 class="text-3xl font-bold mb-6 text-white flex items-center">
             <i class="fi fi-rr-stats mr-3 text-green-400"></i>
             Controle Financeiro
         </h1>
 
-        <!-- Cards de Métricas -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             
             <FinancialMetricCard 
-                title="Total Recebido (Pedidos)"
+                title="Total Recebido"
                 :value="metricas.valorPagoEmPedidos"
                 icon="fi fi-rr-credit-card"
                 color-class="text-green-400"
@@ -42,7 +39,7 @@ onMounted(() => {
             />
             
             <FinancialMetricCard 
-                title="A Receber (Pedidos)"
+                title="Valores pendentes"
                 :value="metricas.valorPendenteEmPedidos"
                 icon="fi fi-rr-money-bill-wave"
                 color-class="text-yellow-400"
@@ -63,7 +60,7 @@ onMounted(() => {
             </FinancialMetricCard>
 
             <FinancialMetricCard 
-                :title="`Resultado vs Limite (R$ ${LIMITE_ALVO.toLocaleString('pt-BR')})`"
+                :title="`Limite (R$ ${limiteAlvoFormatado})`"
                 :value="resultadoLimite"
                 icon="fi fi-rr-chart-line"
                 :color-class="resultadoLimite >= 0 ? 'text-green-500' : 'text-red-500'"
@@ -87,9 +84,9 @@ onMounted(() => {
             </div>
         </div>
 
-        <div class="mt-8 bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-700">
-            <h3 class="text-xl font-medium text-white">Análise de Dados (Gráficos Futuros)</h3>
-            <p class="text-gray-400 mt-2">Esta seção pode ser usada para integrar componentes de gráficos (como ApexCharts ou Chart.js) para visualizar receitas por mês, tipo de serviço, etc.</p>
+        <div class="mt-8 p-6 rounded-xl shadow-lg border border-gray-700">
+            <h3 class="text-xl font-medium text-white">Análise de Dados (Gráficos)</h3>
+            <p class="text-gray-400 mt-2">Em desenvolvimento...</p>
         </div>
     </div>
 </template>

@@ -7,7 +7,6 @@ export function useDiscountLogic() {
     const descontoPorcentagem = computed({
         get: () => draftStore.descontoPorcentagem,
         set: (novoValor: number) => {
-            // Garante que o valor não seja negativo
             draftStore.descontoPorcentagem = Math.max(0, novoValor);
         }
     });

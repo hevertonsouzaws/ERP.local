@@ -5,6 +5,7 @@ import type { IGarmentType, IService } from "@/shared/types/catalog.type";
 import type { Cliente } from "@/shared/types/cliente.type";
 import { generateUUID } from "@/shared/helpers/uuid.helper";
 import { getDataHojeString } from "@/shared/helpers/data.helper";
+import { showToast } from "../helpers/toastState";
 
 interface DraftOrder {
     cliente: Cliente | null;
@@ -32,7 +33,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         pagamentos: [],
     });
 
-    const descontoPorcentagem = ref(0); // Movido para fora do ref<DraftOrder>
+    const descontoPorcentagem = ref(0); 
 
     const subtotal = computed(() => calcularValorSubtotalItens(rascunho.value.itens));
 
@@ -73,7 +74,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.dataEntrega = pedido.dataEntrega;
         rascunho.value.horarioEntrega = pedido.horarioEntrega || '';
         rascunho.value.itens = JSON.parse(JSON.stringify(toRaw(pedido.itens)));
-        rascunho.value.pagamentos = JSON.parse(JSON.stringify(toRaw(pedido.pagamentos))); // Carrega pagamentos
+        rascunho.value.pagamentos = JSON.parse(JSON.stringify(toRaw(pedido.pagamentos)));
         descontoPorcentagem.value = pedido.descontoPorcentagem;
     }
 
@@ -131,9 +132,10 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.pagamentos.splice(index, 1);
     }
 
-    function toPedidoForSave(): Omit<Pedido, 'uuid'> {
+    function toPedidoForSave(): Omit<Pedido, 'uuid'> | undefined {
         if (!rascunho.value.cliente) {
-            throw new Error('Cliente deve ser selecionado para salvar o pedido.');
+            showToast('Cliente deve ser selecionado para salvar o pedido.', 'warning');
+            return undefined;
         }
 
         const statusOperacionalInicial: PedidoStatus = 'PENDENTE';

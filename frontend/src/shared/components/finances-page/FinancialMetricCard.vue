@@ -9,15 +9,24 @@ const props = defineProps<{
 }>();
 
 const formattedValue = computed(() => {
-    if (props.isCurrency) {
-        return `R$ ${props.value.toFixed(2).replace('.', ',')}`;
+    if (typeof props.value !== 'number' || !isFinite(props.value)) {
+        return props.isCurrency ? 'R$ 0,00' : '0';
     }
-    return props.value.toString();
+
+    if (props.isCurrency) {
+        return new Intl.NumberFormat('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL',
+            minimumFractionDigits: 2,
+        }).format(props.value);
+    }
+    
+    return props.value.toLocaleString('pt-BR');
 });
 </script>
 
 <template>
-    <div class="p-6 rounded-xl shadow-lg border border-gray-500 hover:border-white transition duration-300">
+    <div class="p-5 rounded-xl shadow-lg border border-gray-500 hover:border-white transition duration-300">
         <div class="flex justify-between items-start">
             <div class="text-white">
                 <p class="text-sm  text-gray-200 uppercase tracking-wider">{{ title }}</p>

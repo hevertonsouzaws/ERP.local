@@ -46,6 +46,11 @@ const finalizarPedido = async () => {
 
     try {
         const pedidoParaSalvar = draftStore.toPedidoForSave();
+        
+        if (!pedidoParaSalvar) {
+            return;
+        }
+
         const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
 
         if (uuidSalvo) {
@@ -91,8 +96,8 @@ const finalizarPedido = async () => {
 
                     <div class="col-span-12 lg:col-span-4 space-y-6">
                         <DateSelector :date-logica="dateLogic" />
-                        <PaymentForm :payment-logica="paymentLogic" />
                         <DescontoForm :discount-logica="discountLogic" />
+                        <PaymentForm :payment-logica="paymentLogic" />
                     </div>
     
                 </div>

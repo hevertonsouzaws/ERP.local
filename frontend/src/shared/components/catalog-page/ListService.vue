@@ -21,6 +21,7 @@
 <script setup lang="ts">
 import type { IService } from '@/shared/types/catalog.type';
 import { useServiceStore } from '@/shared/stores/catolog.store';
+import { showToast } from '@/shared/helpers/toastState';
 
 const props = defineProps<{
     services: IService[];
@@ -35,8 +36,7 @@ async function handleDelete(uuid: string) {
         try {
             await serviceStore.deleteService(uuid);
         } catch (error) {
-            console.error('Falha ao deletar serviço:', error);
-            alert('Não foi possível excluir o serviço.');
+            showToast('Falha ao deletar serviço:', 'error');
         }
     }
 }

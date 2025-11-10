@@ -4,7 +4,7 @@ interface ToastState {
     message: string;
     type: 'success' | 'error' | 'warning';
     isVisible: boolean;
-    timeoutId?: number; // Tipagem corrigida para setTimeout
+    timeoutId?: number;
 }
 
 export const toastState = reactive<ToastState>({

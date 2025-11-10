@@ -2,6 +2,7 @@ import { ref, computed, watch } from 'vue';
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { type FormaPagamento } from '@/shared/types/pedido.type';
 import { FORMAS_PAGAMENTO_DISPONIVEIS } from '@/shared/consts/create-order/paymentOptions.const'; 
+import { showToast } from '../toastState';
 
 export function usePaymentFormLogic() {
     const draftStore = useDraftOrderStore();
@@ -24,20 +25,15 @@ export function usePaymentFormLogic() {
         const valorPagar = parseFloat(novoPagamento.value.valor.toFixed(2));
 
         if (valorPagar <= 0) {
-            console.error('O valor a pagar deve ser maior que zero.');
+            showToast('O valor a pagar deve ser maior que zero.', 'warning');
             return;
         }
 
         const valorLimite = valorRestante.value;
 
         if (valorLimite === 0 && valorPagar > 0) {
-            console.error('O pedido já está quitado. Remova um pagamento ou zere o valor a pagar.');
+            showToast('O pedido já está quitado. Remova um pagamento ou zere o valor a pagar.', 'warning');
             return;
-        }
-
-        if (valorPagar > valorLimite && valorLimite > 0) {
-            // Em vez de 'confirm', usaremos um sistema de UI ou faremos a transação direta
-            console.warn(`O valor de R$ ${valorPagar.toFixed(2)} excede o restante de R$ ${valorLimite.toFixed(2)}. Registrando o excesso.`);
         }
 
         draftStore.addPayment(novoPagamento.value.forma, valorPagar);
@@ -51,12 +47,10 @@ export function usePaymentFormLogic() {
     };
 
     watch(valorRestante, (novoRestante) => {
-        // Atualiza o campo de pagamento sugerido automaticamente
         novoPagamento.value.valor = novoRestante;
     }, { immediate: true });
 
     watch(valorTotalPedido, (novoValor) => {
-        // Se for o primeiro pagamento, sugere o valor total
         if (pagamentosRegistrados.value.length === 0) {
             novoPagamento.value.valor = novoValor;
         }

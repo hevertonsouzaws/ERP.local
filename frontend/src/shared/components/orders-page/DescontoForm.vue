@@ -7,7 +7,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="bg-gray-700 p-4 rounded-xl shadow-lg space-y-3">
+    <div class="bg-gray-900 p-4 rounded-xl shadow-lg space-y-3">
         <h3 class="text-lg font-semibold text-white flex items-center">
             <i class="fi fi-rr-tags text-yellow-400 mr-2"></i> Desconto Aplicado
         </h3>

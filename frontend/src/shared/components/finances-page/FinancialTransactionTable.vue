@@ -8,7 +8,7 @@ const props = defineProps<{
 </script>
 
 <template>
-    <div class="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-700">
+    <div class="p-6 rounded-xl shadow-lg border border-gray-500">
         <h3 class="text-xl font-bold text-white mb-4">Últimas Transações</h3>
         
         <div class="overflow-x-auto">

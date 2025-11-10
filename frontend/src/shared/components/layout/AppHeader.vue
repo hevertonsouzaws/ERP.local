@@ -24,9 +24,6 @@
                     <router-link to="/backup">
                         <i class="fi fi-rr-rotate-right"></i>
                     </router-link>
-                    <router-link to="/print">
-                        <i class="fi fi-rr-print"></i>
-                    </router-link>
                 </div>
             </div>
         </nav>

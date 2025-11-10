@@ -79,19 +79,21 @@
                     </div>
                 </div>
 
-                <ul class="ml-2 border-l border-gray-600 pl-3 space-y-1">
+                <ul class="ml-2 border-l border-gray-500 pl-3 space-y-1">
                     <li v-for="servico in item.servicos" :key="servico.uuid"
-                        class="flex justify-between items-center text-gray-300">
+                        class="flex justify-between items-center text-white">
                         <span class="text-xs">{{ servico.quantidade }}x {{ servico.name }}</span>
-                        <span class="text-xs font-semibold text-green-400">R$ {{ (servico.quantidade *
-                            servico.unitPrice).toFixed(2) }}</span>
+                        <div>
+                            <span class="text-xs font-semibold text-green-400">R$ {{ (servico.quantidade *
+                                servico.unitPrice).toFixed(2) }}</span>
 
-                        <button @click="itemLogica.removerServico(item.uuid, servico.uuid)"
-                            class="text-red-400 hover:text-red-300 transition ml-2">
-                            <i class="fi fi-rr-cross-small text-xs"></i>
-                        </button>
+                            <button @click="itemLogica.removerServico(item.uuid, servico.uuid)"
+                                class="text-red-400 hover:text-red-300 transition ml-2">
+                                <i class="fi fi-rr-cross-small text-xs"></i>
+                            </button>
+                        </div>
                     </li>
-                    <li v-if="item.servicos.length === 0" class="text-xs italic text-gray-400">Nenhum
+                    <li v-if="item.servicos.length === 0" class="text-xs italic text-gray-200">Nenhum
                         serviço adicionado.</li>
                 </ul>
             </div>

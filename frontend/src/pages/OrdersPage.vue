@@ -5,7 +5,7 @@ import type { Pedido, PedidoStatus } from '@/shared/types/pedido.type';
 import { showToast } from '@/shared/helpers/toastState';
 import ReceberPagamentoModal from '@/shared/components/orders-page/ReceberPagamentoModal.vue';
 import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue'; 
-import PedidoCard from '@/shared/components/orders-page/PedidoCard.vue';
+import PedidoCard from '@/shared/components/orders-page/OrderCard.vue';
 import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 
 const store = usePedidoStore();
