@@ -8,6 +8,7 @@ import { getDataHojeString, toCaps } from '@/shared/helpers/data.helper';
 import type { Cliente } from '@/shared/types/cliente.type';
 import { type FormaPagamento, type PedidoItemPeca, type PedidoItemServico } from '@/shared/types/pedido.type';
 import type { IService, IGarmentType } from '@/shared/types/catalog.type';
+import { showToast } from '@/shared/helpers/toastState';
 
 const emit = defineEmits(['close']);
 
@@ -60,7 +61,6 @@ const currentItemPrice = computed(() => {
     return 0;
 });
 
-// FUNÇÃO ATUALIZADA: Adicionar PEÇA
 const adicionarPecaAoPedido = () => {
     const garment = garmentTypes.value.find(g => g.uuid === selectedGarmentTypeUuid.value);
     
@@ -107,7 +107,6 @@ const removerServico = (pecaUuid: string, servicoUuid: string) => {
 
 const removerItem = (uuid: string) => {
     draftStore.removeGarment(uuid);
-    // Limpa a seleção da peça ativa se ela foi removida
     if (pecaSelecionadaParaServico.value?.uuid === uuid) {
         pecaSelecionadaParaServico.value = null;
     }
@@ -176,25 +175,32 @@ const cadastrarESelecionarCliente = async () => {
 
 const salvarPedido = async () => {
     if (!draftStore.rascunho.cliente || valorTotalPedido.value <= 0) {
-        alert('Selecione um cliente e adicione itens ao pedido.');
+        showToast('Selecione um cliente e adicione itens ao pedido.', 'error');
         return;
     }
 
     try {
         const pedidoParaSalvar = draftStore.toPedidoForSave();
+
+        if (!pedidoParaSalvar) {
+             showToast('Erro interno: Falha ao gerar objeto de pedido para salvar. Verifique se todos os dados estão completos.', 'error');
+             console.error('Falha ao gerar objeto de pedido para salvar.');
+             return;
+        }
+
         const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
 
         if (uuidSalvo) {
-            alert(`Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`);
+            showToast(`Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`, 'success');
             draftStore.resetDraft();
             emit('close');
         } else {
             console.error('Falha ao salvar o pedido.');
-            alert('Falha ao salvar o pedido. Verifique o console para erros.');
+            showToast('Falha ao salvar o pedido. Verifique o console para erros.', 'error');
         }
     } catch (error) {
-        console.error('Erro ao salvar o pedido:', error);
-        alert(`Erro ao salvar: `);
+        showToast(`Erro ao salvar o pedido`, 'error');
+        throw error;
     }
 }
 
