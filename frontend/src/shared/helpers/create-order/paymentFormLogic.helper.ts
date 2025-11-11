@@ -1,6 +1,6 @@
 import { ref, computed, watch } from 'vue';
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
-import { type FormaPagamento } from '@/shared/types/pedido.type';
+import { type FormaPagamento } from '@/shared/types/order.type';
 import { FORMAS_PAGAMENTO_DISPONIVEIS } from '@/shared/consts/create-order/paymentOptions.const'; 
 import { showToast } from '../toastState';
 

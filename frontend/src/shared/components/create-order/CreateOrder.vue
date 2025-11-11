@@ -13,7 +13,7 @@ import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import { useDiscountLogic } from '@/shared/helpers/create-order/discountLogic'; 
 import { showToast } from '@/shared/helpers/toastState';
-import DescontoForm from '../orders-page/DescontoForm.vue';
+import DescontoForm from '../orders-page/DescountForm.vue';
 
 const draftStore = useDraftOrderStore();
 const clientLogic = useClientFormLogic();

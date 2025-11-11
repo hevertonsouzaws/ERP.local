@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
-import type { PedidoStatus } from '@/shared/types/pedido.type';
+import type { PedidoStatus } from '@/shared/types/order.type';
 
 const pedidoStore = usePedidoStore();
 
@@ -30,7 +30,7 @@ const getStatusClass = (status: PedidoStatus) => {
         <div v-else>
             <router-link to="/pedidos" class="space-y-2">
                 <div v-for="pedido in pedidoStore.pedidosFiltrados" :key="pedido.uuid"
-                    class="p-4 border border-gray-400 rounded-lg shadow-md transition duration-150 hover:bg-gray-600 h-[100px]">
+                    class="p-4 border border-gray-400 rounded-lg shadow-md transition duration-150 hover:bg-gray-800 h-[100px]">
                     <div class="flex justify-between items-start mb-2">
                         <p class="font-semibold text-base text-gray-200">{{ pedido.clienteNome }}</p>
                         <span

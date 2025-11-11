@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed, toRaw } from "vue";
-import type { Pedido, PedidoItemPeca, PedidoStatus, FormaPagamento, PagamentoRegistro } from "@/shared/types/pedido.type";
+import type { Pedido, PedidoItemPeca, PedidoStatus, FormaPagamento, PagamentoRegistro } from "@/shared/types/order.type";
 import type { IGarmentType, IService } from "@/shared/types/catalog.type";
 import type { Cliente } from "@/shared/types/cliente.type";
 import { generateUUID } from "@/shared/helpers/uuid.helper";

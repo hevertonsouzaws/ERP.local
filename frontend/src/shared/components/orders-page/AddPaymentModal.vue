@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
-import type { Pedido, FormaPagamento, PagamentoRegistro } from '@/shared/types/pedido.type';
+import type { Pedido, FormaPagamento, PagamentoRegistro } from '@/shared/types/order.type';
 import { showToast } from '@/shared/helpers/toastState'; 
 
 const props = defineProps<{

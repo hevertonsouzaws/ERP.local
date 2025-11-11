@@ -2,9 +2,9 @@
 import { onMounted, ref } from 'vue';
 import { useClienteStore } from '@/shared/stores/cliente.store';
 import type { Cliente } from '@/shared/types/cliente.type';
-import ClienteCard from '@/shared/components/client-page/ClienteCard.vue';
-import ClienteEditarModal from '@/shared/components/client-page/ClienteEditarModal.vue';
-import ClienteAdicionarModal from '@/shared/components/client-page/ClienteAdicionarModal.vue'; 
+import ClienteCard from '@/shared/components/client-page/ClientCard.vue';
+import ClienteEditarModal from '@/shared/components/client-page/ClientEditModal.vue';
+import ClienteAdicionarModal from '@/shared/components/client-page/ClientAddModal.vue'; 
 
 const store = useClienteStore();
 const clienteParaEditar = ref<Cliente | null>(null);

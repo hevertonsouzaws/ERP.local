@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue';
-import type { Pedido } from '@/shared/types/pedido.type';
+import type { Pedido } from '@/shared/types/order.type';
 import { showToast } from '@/shared/helpers/toastState'; 
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
@@ -15,7 +15,7 @@ import ClientSelector from '../create-order/ClientSelector.vue';
 import ItemAdder from '../create-order/ItemAdder.vue';
 import PaymentForm from '../create-order/PaymentForm.vue';
 import DateSelector from '../create-order/DateSelector.vue';
-import DiscountForm from './DescontoForm.vue';
+import DiscountForm from './DescountForm.vue';
 
 
 const props = defineProps<{

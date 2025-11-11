@@ -6,7 +6,7 @@ import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import { getDataHojeString, toCaps } from '@/shared/helpers/data.helper';
 import type { Cliente } from '@/shared/types/cliente.type';
-import { type FormaPagamento, type PedidoItemPeca, type PedidoItemServico } from '@/shared/types/pedido.type';
+import { type FormaPagamento, type PedidoItemPeca, type PedidoItemServico } from '@/shared/types/order.type';
 import type { IService, IGarmentType } from '@/shared/types/catalog.type';
 import { showToast } from '@/shared/helpers/toastState';
 

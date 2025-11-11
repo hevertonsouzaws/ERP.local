@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { ref, toRaw, computed } from "vue";
 import { db } from "../services/Database/Database";
-import type { Pedido, PedidoStatus, PagamentoRegistro, PedidoItemPeca } from "../types/pedido.type";
+import type { Pedido, PedidoStatus, PagamentoRegistro, PedidoItemPeca } from "../types/order.type";
 import type { Metrica, TotalPorFormaPagamento } from "../types/metrica.type";
 import { getMesAnoAtual, getDataHojeString } from "@/shared/helpers/data.helper";
 import { generateUUID } from "../helpers/uuid.helper";

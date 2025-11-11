@@ -3,7 +3,7 @@
         <nav class="text-white">
             <div class="flex flex-col items-center justify-center gap-20 gap-y-4 md:flex-row">
                 <router-link to="/">
-                    <p class="font-allura-custom font-semibold text-3xl">NS</p>
+                    <p class="font-allura-custom font-semibold text-3xl">NS0</p>
                 </router-link>
                 <div class="text-xl flex gap-10">
                     <router-link to="/">

@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { getDiasNoMes, getPrimeiroDiaSemana, getDataHojeString } from '@/shared/helpers/data.helper';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
-import type { Pedido } from '@/shared/types/pedido.type';
+import type { Pedido } from '@/shared/types/order.type';
 
 const pedidoStore = usePedidoStore();
 const hoje = getDataHojeString();

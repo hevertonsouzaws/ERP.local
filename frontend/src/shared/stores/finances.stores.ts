@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { usePedidoStore } from './pedido.store';
-import type { MetricasFinanceiras, TransacaoFinanceira } from '../types/fincanceiro.type';
+import type { MetricasFinanceiras, TransacaoFinanceira } from '../types/fincance.type';
 import { getDataHojeString } from '../helpers/data.helper';
 
 export const useFinanceiroStore = defineStore('financeiro', {

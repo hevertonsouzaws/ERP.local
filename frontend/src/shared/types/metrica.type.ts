@@ -1,4 +1,4 @@
-import { type FormaPagamento } from './pedido.type';
+import { type FormaPagamento } from './order.type';
 
 export type TotalPorFormaPagamento = {
     [key in FormaPagamento]: number;

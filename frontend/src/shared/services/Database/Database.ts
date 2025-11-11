@@ -1,6 +1,6 @@
 import Dexie, { type Table } from "dexie";
 import type { Cliente } from "@/shared/types/cliente.type";
-import type { Pedido } from "@/shared/types/pedido.type";
+import type { Pedido } from "@/shared/types/order.type";
 import type { Metrica } from "@/shared/types/metrica.type";
 import type { IGarmentType, IService } from "@/shared/types/catalog.type"; 
 

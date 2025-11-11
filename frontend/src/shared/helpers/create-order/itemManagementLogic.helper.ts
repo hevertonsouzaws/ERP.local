@@ -2,7 +2,7 @@ import { ref, computed } from 'vue';
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import type { IGarmentType, IService } from '@/shared/types/catalog.type';
-import type { PedidoItemPeca } from '@/shared/types/pedido.type';
+import type { PedidoItemPeca } from '@/shared/types/order.type';
 import { showToast } from '../toastState';
 
 export function useItemManagementLogic() {

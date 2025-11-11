@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Pedido, PedidoStatus, PedidoItemPeca } from '@/shared/types/pedido.type';
+import type { Pedido, PedidoStatus, PedidoItemPeca } from '@/shared/types/order.type';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
 import { computed } from 'vue';

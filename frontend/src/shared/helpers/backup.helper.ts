@@ -1,6 +1,6 @@
 import { db } from '@/shared/services/Database/Database';
 import type { Cliente } from '@/shared/types/cliente.type';
-import type { Pedido } from '@/shared/types/pedido.type';
+import type { Pedido } from '@/shared/types/order.type';
 import { generateUUID } from './uuid.helper';
 import { showToast } from './toastState';
 
