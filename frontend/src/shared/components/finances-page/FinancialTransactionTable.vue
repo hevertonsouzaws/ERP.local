@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TransacaoFinanceira } from '@/shared/types/fincance.type';
-import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
+import { formatarDataHoraParaExibicao } from '@/shared/helpers/data.helper';
 import { ref, computed } from 'vue';
 
 const props = defineProps<{
@@ -41,12 +41,12 @@ const transacoesFiltradas = computed(() => {
             <div class="flex-1">
                 <label for="data-inicial" class="block text-xs font-medium text-gray-300 mb-1">Data Inicial:</label>
                 <input type="date" id="data-inicial" v-model="dataInicial"
-                    class="w-full p-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-white focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full p-2 bg-gray-900 border border-gray-500 rounded-md text-sm text-white focus:ring-blue-500 focus:border-blue-500">
             </div>
             <div class="flex-1">
                 <label for="data-final" class="block text-xs font-medium text-gray-300 mb-1">Data Final:</label>
                 <input type="date" id="data-final" v-model="dataFinal"
-                    class="w-full p-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-white focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full p-2 cursor-pointer bg-gray-900 border border-gray-500 rounded-md text-sm text-white focus:ring-blue-500 focus:border-blue-500">
             </div>
         </div>
         
@@ -55,7 +55,7 @@ const transacoesFiltradas = computed(() => {
                 <thead>
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Data</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Descrição</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Cliente</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Valor</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Método</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Tipo</th>
@@ -64,7 +64,7 @@ const transacoesFiltradas = computed(() => {
                 <tbody class="divide-y divide-gray-700">
                     <tr v-for="t in transacoesFiltradas" :key="t.id" class="hover:bg-gray-700 transition">
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-300">
-                            {{ formatarDataParaExibicao(t.data) }}
+                            {{ formatarDataHoraParaExibicao(t.data) }}
                         </td>
                         <td class="px-4 py-2 text-sm font-medium text-white">{{ t.descricao }}</td>
                         <td class="px-4 py-2 whitespace-nowrap text-sm font-semibold" 

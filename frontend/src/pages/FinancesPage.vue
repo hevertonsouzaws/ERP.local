@@ -27,7 +27,7 @@ const limiteAlvoFormatado = computed(() => {
     <div class="min-h-screen text-white py-2 p-8 w-full">
         <div class="flex justify-between">
             <h1 class="text-3xl font-bold mb-6 text-white flex items-center">
-                <i class="fi fi-rr-stats mr-3 text-green-400"></i>
+                <i class="fi fi-rr-stats mr-3 text-white"></i>
                 Controle Financeiro
             </h1>
 

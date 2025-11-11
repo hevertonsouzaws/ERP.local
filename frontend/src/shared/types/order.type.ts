@@ -3,7 +3,7 @@ export type FormaPagamento = 'PIX' | 'DEBITO' | 'CREDITO' | 'DINHEIRO' | 'OUTRO'
 export interface PagamentoRegistro {
     forma: FormaPagamento;
     valor: number;
-    timestamp: number; 
+    dataRecebimento: string; 
 }
 
 export type PedidoStatus = 'PENDENTE' | 'CONCLUIDO' | 'CANCELADO'

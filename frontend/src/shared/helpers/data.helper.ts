@@ -20,7 +20,23 @@ export function getMesAnoAtual(): string {
 
 export function getDataHojeString(): string {
     const data = new Date();
-    return data.toISOString().split('T')[0];
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia}`;
+}
+
+export function getDataHoraHojeString(): string {
+    const data = new Date();
+    const ano = data.getFullYear();
+    const mes = String(data.getMonth() + 1).padStart(2, '0');
+    const dia = String(data.getDate()).padStart(2, '0');
+    const hora = String(data.getHours()).padStart(2, '0');
+    const minuto = String(data.getMinutes()).padStart(2, '0');
+    const segundo = String(data.getSeconds()).padStart(2, '0');
+    
+    return `${ano}-${mes}-${dia}T${hora}:${minuto}:${segundo}`;
 }
 
 export function getDiasNoMes(ano: number, mes: number): number {
@@ -32,7 +48,24 @@ export function getPrimeiroDiaSemana(ano: number, mes: number): number {
 }
 
 export function formatarDataParaExibicao(data: string): string {
-    const [ano, mes, dia] = data.split('-').map(Number);
-    const date = new Date(ano, mes - 1, dia);
-    return date.toLocaleDateString('pt-BR', { weekday: 'short', month: 'short', day: 'numeric' });
+    const dateObj = new Date(data.replace(/-/g, '/')); 
+    if (isNaN(dateObj.getTime())) {
+        return '';
+    }
+
+    return dateObj.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
 }
+
+export function formatarDataHoraParaExibicao(data: string): string {
+    const dateObj = new Date(data.replace(/-/g, '/').replace('T', ' '));
+
+    if (isNaN(dateObj.getTime())) {
+        return 'Data Inválida';
+    }
+
+    const dataFormatada = dateObj.toLocaleDateString('pt-BR');
+    const horaFormatada = dateObj.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+    return `${dataFormatada} ${horaFormatada}`;
+}
+

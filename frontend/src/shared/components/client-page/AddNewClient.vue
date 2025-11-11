@@ -22,7 +22,6 @@ const atualizarTelefone = (event: Event) => {
 
 const salvarCliente = async () => {
     if (clienteNovo.value.nome) {
-        // A formatação CAPS LOCK e final do telefone é feita DENTRO da store
         await store.adicionarCliente(clienteNovo.value);
 
         clienteNovo.value.nome = '';

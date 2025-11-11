@@ -34,7 +34,6 @@ const getColorClass = (index: number) => {
     ];
     return colors[index % colors.length];
 };
-
 </script>
 
 <template>

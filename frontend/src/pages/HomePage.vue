@@ -2,7 +2,6 @@
 import MetricsBar from '@/shared/components/home-page/MetricsBar.vue';
 import CalendarView from '@/shared/components/home-page/CalendarVue.vue';
 import DailyOrdersSidebar from '@/shared/components/home-page/DailyOrdersSideBar.vue';
-import CreateOrderModal from '@/shared/components/home-page/CreateOrderModal.vue';
 import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 import { ref } from 'vue';
 

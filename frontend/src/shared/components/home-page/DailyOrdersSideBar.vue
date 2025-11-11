@@ -42,11 +42,11 @@ const getStatusClass = (status: PedidoStatus) => {
                         <p class="text-sm text-gray-200"><span class="font-medium">Emissão:</span> {{
                             formatarDataParaExibicao(pedido.dataCriacao) }}
                         </p>
-                        <p class="text-sm text-white"><span class="font-medium">Entrega:</span> {{
+                        <p v-if="pedido.horarioEntrega" class="text-sm text-white"><span class="font-medium">Horário:</span> {{
                             pedido.horarioEntrega }}
                         </p>
                         <p class="text-sm text-white"><span class="font-medium">Valor:</span> {{
-                            pedidoStore.getValorTotalPedido(pedido).toFixed(2) }}
+                            pedidoStore.calcularValorTotalPedido(pedido).toFixed(2) }}
                         </p>
                     </div>
                 </div>

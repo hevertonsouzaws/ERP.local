@@ -4,7 +4,7 @@ import type { Pedido, PedidoItemPeca, PedidoStatus, FormaPagamento, PagamentoReg
 import type { IGarmentType, IService } from "@/shared/types/catalog.type";
 import type { Cliente } from "@/shared/types/cliente.type";
 import { generateUUID } from "@/shared/helpers/uuid.helper";
-import { getDataHojeString } from "@/shared/helpers/data.helper";
+import { getDataHojeString, getDataHoraHojeString } from "@/shared/helpers/data.helper";
 import { showToast } from "../helpers/toastState";
 
 interface DraftOrder {
@@ -27,13 +27,13 @@ function calcularValorSubtotalItens(itens: PedidoItemPeca[]): number {
 export const useDraftOrderStore = defineStore('draft-order', () => {
     const rascunho = ref<DraftOrder>({
         cliente: null,
-        dataEntrega: getDataHojeString(),
+        dataEntrega: getDataHoraHojeString(),
         horarioEntrega: '',
         itens: [],
         pagamentos: [],
     });
 
-    const descontoPorcentagem = ref(0); 
+    const descontoPorcentagem = ref(0); // ESTADO SEPARADO
 
     const subtotal = computed(() => calcularValorSubtotalItens(rascunho.value.itens));
 
@@ -61,6 +61,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
             itens: [],
             pagamentos: [],
         };
+
         descontoPorcentagem.value = 0;
     }
 
@@ -75,6 +76,8 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.horarioEntrega = pedido.horarioEntrega || '';
         rascunho.value.itens = JSON.parse(JSON.stringify(toRaw(pedido.itens)));
         rascunho.value.pagamentos = JSON.parse(JSON.stringify(toRaw(pedido.pagamentos)));
+        
+        // 🚨 CORREÇÃO CRÍTICA: Sincronizar o ref de desconto
         descontoPorcentagem.value = pedido.descontoPorcentagem;
     }
 
@@ -124,7 +127,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.pagamentos.push({
             forma,
             valor,
-            timestamp: Date.now(),
+            dataRecebimento: getDataHoraHojeString(),
         });
     }
 

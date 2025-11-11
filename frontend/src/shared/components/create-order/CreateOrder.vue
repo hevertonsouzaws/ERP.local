@@ -73,8 +73,8 @@ const finalizarPedido = async () => {
 </script>
 
 <template>
-    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-gray-800 rounded-xl shadow-2xl w-full lg:max-w-7xl p-6 h-[90vh] flex flex-col">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-20">
+        <div class="bg-gray-800 rounded-xl shadow-2xl w-full p-6 h-[95vh]  flex flex-col">
 
             <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
                 <h2 class="text-2xl font-bold text-white flex items-center">

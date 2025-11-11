@@ -20,7 +20,7 @@ const getStatusClass = (status: PedidoStatus) => {
     }
 }
 
-const valorTotal = computed(() => pedidoStore.getValorTotalPedido(props.pedido));
+const valorTotal = computed(() => pedidoStore.calcularValorTotalPedido(props.pedido));
 
 const valorRestante = computed(() => valorTotal.value - props.pedido.valorPago);
 
@@ -63,7 +63,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
 <template>
     <div
-        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 lg:w-[48.5%] xl:w-[32%] ">
+        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 md:w-[48.5%] 2xl:w-[32%] ">
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">
                 <i class="fi fi-rr-user text-white mr-2 text-xl"></i>
@@ -76,7 +76,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
         <div class="flex justify-between items-center mb-2">
             <div>
-                <p class="font-semibold text-base">{{ formatarDataParaExibicao(pedido.dataEntrega) }} <span
+                <p class="font-semibold text-base"> {{ formatarDataParaExibicao(pedido.dataEntrega) }} <span
                         v-if="pedido.horarioEntrega">({{ pedido.horarioEntrega }})</span></p>
             </div>
             <div class="text-right">

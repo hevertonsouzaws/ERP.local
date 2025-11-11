@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { type PaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLogic.helper';
+
+defineProps<{
+    paymentLogica: PaymentFormLogic;
+}>();
+</script>
+
 <template>
     <div class="space-y-4 p-4 bg-gray-900 rounded-lg border border-gray-700">
         <h3 class="font-bold flex items-center text-lg border-b border-gray-700 pb-2">
@@ -70,10 +78,3 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { type PaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLogic.helper';
-
-defineProps<{
-    paymentLogica: PaymentFormLogic;
-}>();
-</script>

@@ -15,7 +15,7 @@ export function useItemManagementLogic() {
 
     const garmentTypes = computed(() => catalogStore.garmentTypes as IGarmentType[]);
     const services = computed(() => catalogStore.services as IService[]);
-    const itensDoPedido = computed(() => draftStore.rascunho.itens as PedidoItemPeca[]);
+    const itensDoPedido = computed(() => draftStore.rascunho.itens);
 
     const currentSelectedItem = computed<IService | undefined>(() => {
         return services.value.find(s => s.uuid === selectedServiceUuid.value);

@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import { type DateLogic } from '@/shared/helpers/create-order/dateLogic';
+
+defineProps<{
+    dateLogica: DateLogic;
+}>();
+</script>
+
 <template>
     <div class="space-y-3 p-4 bg-gray-900 rounded-lg">
         <h3 class="font-bold mb-4 flex items-center text-lg">
@@ -17,11 +25,3 @@
         </div>
     </div>
 </template>
-
-<script setup lang="ts">
-import { type DateLogic } from '@/shared/helpers/create-order/dateLogic';
-
-defineProps<{
-    dateLogica: DateLogic;
-}>();
-</script>

@@ -1,17 +1,3 @@
-<template>
-  <Transition name="fade-slide">
-    <div v-if="toastState.isVisible" :class="toastClasses"
-      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-xl text-white z-[100] max-w-sm cursor-pointer"
-      @click="toastState.isVisible = false">
-      <div class="flex items-center">
-        <i :class="iconClasses" class="mr-3 text-xl"></i>
-        <p class="font-medium text-sm">{{ toastState.message }}</p>
-      </div>
-
-    </div>
-  </Transition>
-</template>
-
 <script setup lang="ts">
 import { computed } from 'vue';
 import { toastState } from '@/shared/helpers/toastState'; 
@@ -40,6 +26,20 @@ const iconClasses = computed(() => {
   }
 });
 </script>
+
+<template>
+  <Transition name="fade-slide">
+    <div v-if="toastState.isVisible" :class="toastClasses"
+      class="fixed bottom-5 right-5 p-4 rounded-lg shadow-xl text-white z-[100] max-w-sm cursor-pointer"
+      @click="toastState.isVisible = false">
+      <div class="flex items-center">
+        <i :class="iconClasses" class="mr-3 text-xl"></i>
+        <p class="font-medium text-sm">{{ toastState.message }}</p>
+      </div>
+
+    </div>
+  </Transition>
+</template>
 
 <style scoped>
 .fade-slide-enter-active,

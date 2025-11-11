@@ -8,6 +8,7 @@ import {
 } from '@/shared/helpers/backup.helper';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { useClienteStore } from '@/shared/stores/cliente.store';
+import { showToast } from '@/shared/helpers/toastState';
 
 const isLoading = ref(false);
 const message = ref('');
@@ -70,9 +71,6 @@ const handleImportarPedidos = async (event: Event) => {
     const file = target.files?.[0];
 
     if (!file) return;
-    if (!confirm('ATENÇÃO: A importação de PEDIDOS irá MESCLAR os dados atuais. Pedidos do arquivo com ID existente serão ATUALIZADOS. Novos pedidos serão ADICIONADOS. Continuar?')) {
-        target.value = ''; return;
-    }
 
     isLoading.value = true;
     message.value = '';

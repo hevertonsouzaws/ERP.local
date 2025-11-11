@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import type { ClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
+defineProps<{
+    clienteLogica: ClientFormLogic ;
+}>();
+</script>
+
 <template>
     <div class="p-4 bg-gray-900 rounded-lg">
         <h3 class="font-bold mb-3 flex items-center text-lg">
@@ -68,9 +75,3 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import type { ClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
-defineProps<{
-    clienteLogica: ClientFormLogic ;
-}>();
-</script>

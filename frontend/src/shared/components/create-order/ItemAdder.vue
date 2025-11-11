@@ -1,3 +1,10 @@
+<script setup lang="ts">
+import { type ItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
+defineProps<{
+    itemLogica: ItemManagementLogic;
+}>();
+</script>
+
 <template>
     <div class="space-y-3 p-4 bg-gray-900 rounded-lg border border-gray-700">
         <h3 class="font-bold flex items-center text-lg text-blue-400">
@@ -101,9 +108,3 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { type ItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
-defineProps<{
-    itemLogica: ItemManagementLogic;
-}>();
-</script>

@@ -265,7 +265,7 @@ export const usePedidoStore = defineStore('pedidos', () => {
         metricasAtuais,
         dataSelecionada,
         pedidosFiltrados,
-        getValorTotalPedido,
+        calcularValorTotalPedido,
         getPedidoByUuid,
         carregarPedidos,
         carregarMetricasAtuais,
