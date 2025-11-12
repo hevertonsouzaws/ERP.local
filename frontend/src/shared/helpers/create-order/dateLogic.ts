@@ -1,21 +1,38 @@
 import { computed } from 'vue';
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
+import { getDataHojeString } from '@/shared/helpers/data.helper'; 
 
 export function useDateLogic() {
-    const draftStore = useDraftOrderStore();
+    const draftStore = useDraftOrderStore();
+    const dataHoje = getDataHojeString();
 
-    const dataEntrega = computed({
-        get: () => draftStore.rascunho.dataEntrega,
-        set: (value) => { draftStore.rascunho.dataEntrega = value; }
-    });
+    if (!draftStore.rascunho.dataEntrega) {
+        draftStore.rascunho.dataEntrega = dataHoje;
+    }
 
-    const horarioEntrega = computed({
-        get: () => draftStore.rascunho.horarioEntrega,
-        set: (value) => { draftStore.rascunho.horarioEntrega = value; }
-    });
-    
-    return { 
-        dataEntrega, 
-        horarioEntrega 
-    };
+    const dataEntrega = computed({
+        get: () => {
+             const valor = draftStore.rascunho.dataEntrega || dataHoje;
+             // ADICIONE ESTE LOG:
+             console.log("DEBUG: Valor da data de entrega (Store):", valor, typeof valor); 
+             return valor;
+        }, 
+        set: (value: string) => {
+            draftStore.rascunho.dataEntrega = value;
+        },
+    });
+
+    const horarioEntrega = computed({
+        get: () => draftStore.rascunho.horarioEntrega || '',
+        set: (value: string) => {
+            draftStore.rascunho.horarioEntrega = value;
+        },
+    });
+
+    return {
+        dataEntrega,
+        horarioEntrega,
+    };
 }
+
+export type DateLogic = ReturnType<typeof useDateLogic>;

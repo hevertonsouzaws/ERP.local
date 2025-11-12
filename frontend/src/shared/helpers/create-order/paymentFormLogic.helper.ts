@@ -16,26 +16,30 @@ export function usePaymentFormLogic() {
 
     const valorTotalPedido = computed(() => draftStore.valorTotalPedido);
     const valorTotalPago = computed(() => draftStore.valorTotalPago);
-    const valorRestante = computed(() => draftStore.valorRestante);
+    const valorRestante = computed(() => draftStore.valorRestante); 
     const pagamentosRegistrados = computed(() => draftStore.rascunho.pagamentos);
 
     const novoValorPagamentoSugerido = computed(() => Math.max(0, valorRestante.value));
 
     const adicionarPagamento = () => {
         const valorPagar = parseFloat(novoPagamento.value.valor.toFixed(2));
-
+        const valorLimite = novoValorPagamentoSugerido.value; 
         if (valorPagar <= 0) {
             showToast('O valor a pagar deve ser maior que zero.', 'warning');
             return;
         }
-
-        const valorLimite = valorRestante.value;
+        
+        if (valorPagar > valorLimite) {
+            showToast(`O valor a pagar (${valorPagar.toFixed(2)}) não pode ser maior que o restante (${valorLimite.toFixed(2)}).`, 'error');
+            novoPagamento.value.valor = valorLimite;
+            return; 
+        }
 
         if (valorLimite === 0 && valorPagar > 0) {
             showToast('O pedido já está quitado. Remova um pagamento ou zere o valor a pagar.', 'warning');
             return;
         }
-
+        
         draftStore.addPayment(novoPagamento.value.forma, valorPagar);
 
         novoPagamento.value.valor = novoValorPagamentoSugerido.value;

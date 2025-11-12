@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
 import { db } from "../services/Database/Database";
-import type { Metrica, TotalPorFormaPagamento } from "../types/metrica.type"; 
+import type { Metrica, TotalPorFormaPagamento } from "../types/metrica.type";
 import { getMesAnoAtual } from "@/shared/helpers/data.helper";
-import { usePedidoStore } from "./pedido.store"; 
-export const useMetricaStore = defineStore('metricas', () => {
+import { usePedidoStore } from "./pedido.store";
+
+export const useMetricasStore = defineStore('metricas', () => {
     const metricasAtuais = ref<Metrica>();
 
     const pedidoStore = usePedidoStore();
@@ -72,7 +73,7 @@ export const useMetricaStore = defineStore('metricas', () => {
         await pedidoStore.carregarPedidos();
         await calcularMetricasGerais();
     }
-    
+
     async function atualizarMetricasAposConclusao(valorPedido: number) {
         const mesAno = getMesAnoAtual();
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Cliente } from '@/shared/types/cliente.type';
+import { formatarTelefone } from '@/shared/helpers/data.helper';
 
 const props = defineProps<{
     cliente: Cliente;
@@ -16,7 +17,7 @@ const emit = defineEmits(['edit']);
                 <p class="text-white font-semibold">{{ cliente.nome }}</p>
                 <p v-if="cliente.telefone" class="text-gray-400 text-sm">
                     <i class="fi fi-rr-phone-call text-xs mr-1 text-green-400"></i>
-                    {{ cliente.telefone }}
+                    {{ formatarTelefone(cliente.telefone) }}
                 </p>
                 <p v-else class="text-gray-500 text-xs italic">Sem telefone</p>
             </div>

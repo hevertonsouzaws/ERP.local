@@ -4,17 +4,19 @@ import { usePedidoStore } from '@/shared/stores/pedido.store';
 import type { Pedido, FormaPagamento, PagamentoRegistro } from '@/shared/types/order.type';
 import { showToast } from '@/shared/helpers/toastState';
 import { getDataHoraHojeString } from '@/shared/helpers/data.helper';
+import { 
+    formatCurrency, 
+    formatNumberAsCurrency,
+    processCurrencyInput 
+} from '@/shared/helpers/currency.helper';
 
 const props = defineProps<{
     pedido: Pedido | null;
 }>();
 
 const emit = defineEmits(['close', 'payment-success']);
-
 const pedidoStore = usePedidoStore();
-
 const formasDisponiveis: FormaPagamento[] = ['DINHEIRO', 'PIX', 'DEBITO', 'CREDITO', 'OUTRO'];
-
 const pagamentosAtuais = ref<PagamentoRegistro[]>([]);
 const valorTotalPedido = ref(0);
 const valorPagoAnterior = ref(0);
@@ -24,15 +26,20 @@ const novoPagamento = ref({
     valor: 0,
 });
 
+const novoPagamentoValorFormatado = ref(formatNumberAsCurrency(novoPagamento.value.valor));
+
 const valorTotalPago = computed(() => {
     return valorPagoAnterior.value + pagamentosAtuais.value.reduce((total, p) => total + p.valor, 0);
 });
 
 const valorRestante = computed(() => {
+    return valorTotalPedido.value - valorTotalPago.value;
+});
+
+const valorMaximoParaPagar = computed(() => {
     return Math.max(0, valorTotalPedido.value - valorTotalPago.value);
 });
 
-const podeQuitar = computed(() => valorTotalPago.value >= valorTotalPedido.value);
 
 watch(() => props.pedido, (newPedido) => {
     if (newPedido) {
@@ -42,15 +49,28 @@ watch(() => props.pedido, (newPedido) => {
 
         valorPagoAnterior.value = newPedido.valorPago;
         pagamentosAtuais.value = [];
-        novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
+        
+        const restanteInicial = parseFloat(valorMaximoParaPagar.value.toFixed(2));
+        novoPagamento.value.valor = restanteInicial;
+        novoPagamentoValorFormatado.value = formatNumberAsCurrency(restanteInicial);
     }
 }, { immediate: true });
 
 const adicionarPagamento = () => {
     const valorPagar = parseFloat(novoPagamento.value.valor.toFixed(2));
+    const limiteAtual = valorMaximoParaPagar.value;
 
     if (valorPagar <= 0) {
         showToast('O valor a pagar deve ser maior que zero.', 'warning');
+        return;
+    }
+
+    if (valorPagar > limiteAtual) {
+        showToast(`O valor inserido (${formatCurrency(valorPagar)}) excede o restante a pagar (${formatCurrency(limiteAtual)}).`, 'error');
+        
+        const novoLimite = parseFloat(limiteAtual.toFixed(2));
+        novoPagamento.value.valor = novoLimite;
+        novoPagamentoValorFormatado.value = formatNumberAsCurrency(novoLimite);
         return;
     }
 
@@ -60,12 +80,17 @@ const adicionarPagamento = () => {
         dataRecebimento: getDataHoraHojeString(),
     });
 
-    novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
+    const novoRestante = parseFloat(valorMaximoParaPagar.value.toFixed(2));
+    novoPagamento.value.valor = novoRestante;
+    novoPagamentoValorFormatado.value = formatNumberAsCurrency(novoRestante);
 };
 
 const removerPagamento = (index: number) => {
     pagamentosAtuais.value.splice(index, 1);
-    novoPagamento.value.valor = parseFloat(valorRestante.value.toFixed(2));
+    
+    const novoRestante = parseFloat(valorMaximoParaPagar.value.toFixed(2));
+    novoPagamento.value.valor = novoRestante;
+    novoPagamentoValorFormatado.value = formatNumberAsCurrency(novoRestante);
 };
 
 const salvarPagamento = async () => {
@@ -98,6 +123,29 @@ const salvarPagamento = async () => {
 const fecharModal = () => {
     emit('close');
 }
+
+
+const handleInput = (event: Event) => {
+    const target = event.target as HTMLInputElement;
+
+    const { numericValue, formattedValue } = processCurrencyInput(target.value);
+
+    novoPagamento.value.valor = numericValue;
+
+    novoPagamentoValorFormatado.value = formattedValue;
+
+    let valueLength = target.value.replace(/\D/g, '').length;
+    let diff = formattedValue.length - valueLength;
+    let newCursorPos = (target.selectionStart || 0) + diff;
+
+    requestAnimationFrame(() => {
+        target.setSelectionRange(newCursorPos, newCursorPos);
+    });
+};
+
+const formatOnBlur = () => {
+    novoPagamentoValorFormatado.value = formatNumberAsCurrency(novoPagamento.value.valor);
+};
 </script>
 
 <template>
@@ -123,16 +171,16 @@ const fecharModal = () => {
                     <div class="grid grid-cols-3 gap-3 text-center pt-2 border-t border-gray-600">
                         <div>
                             <p class="text-xs text-gray-400">Total</p>
-                            <p class="text-lg font-bold text-white">R$ {{ valorTotalPedido.toFixed(2) }}</p>
+                            <p class="text-lg font-bold text-white">{{ formatCurrency(valorTotalPedido) }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">Pago Antes</p>
-                            <p class="text-lg font-bold text-green-500">R$ {{ valorPagoAnterior.toFixed(2) }}</p>
+                            <p class="text-lg font-bold text-green-500">{{ formatCurrency(valorPagoAnterior) }}</p>
                         </div>
                         <div>
                             <p class="text-xs text-gray-400">Falta Pagar</p>
                             <p class="text-lg font-bold" :class="valorRestante > 0 ? 'text-red-400' : 'text-green-400'">
-                                R$ {{ valorRestante.toFixed(2) }}
+                                {{ formatCurrency(valorMaximoParaPagar) }}
                             </p>
                         </div>
                     </div>
@@ -153,8 +201,13 @@ const fecharModal = () => {
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-1">Valor (R$)</label>
-                            <input type="number" step="0.01" v-model.number="novoPagamento.valor"
-                                class="w-full p-2 bg-gray-900 border border-gray-400 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500">
+                            <input type="text" 
+                                :value="novoPagamentoValorFormatado" 
+                                @input="handleInput" 
+                                @blur="formatOnBlur"
+                                @focus="($event.target as HTMLInputElement)?.select()"
+                                class="w-full p-2 bg-gray-900 border border-gray-400 rounded-lg text-white focus:ring-blue-500 focus:border-blue-500 text-right"
+                                inputmode="decimal">
                         </div>
                     </div>
 
@@ -172,21 +225,16 @@ const fecharModal = () => {
                         <li v-for="(p, index) in pagamentosAtuais" :key="index"
                             class="flex justify-between items-center bg-gray-700 p-3 rounded-lg shadow-md">
                             <span class="text-gray-300">{{ p.forma }}</span>
-                            <span class="text-white font-bold">R$ {{ p.valor.toFixed(2) }}</span>
+                            <span class="text-white font-bold">{{ formatCurrency(p.valor) }}</span>
                             <button @click="removerPagamento(index)" class="text-red-400 hover:text-red-500 transition">
                                 <i class="fi fi-rr-trash text-base"></i>
                             </button>
                         </li>
                     </ul>
                 </div>
-
-                <div v-if="valorRestante <= 0 && pagamentosAtuais.length < 0"
-                    class="mt-4 p-3 bg-yellow-600 rounded-lg text-white font-semibold text-center">
-                    Atenção: O valor pago ultrapassa o valor restante.
-                </div>
             </div>
 
-            <div class="mt-6 pt-4 border-t border-gray-700 flex justify-between items-center m-auto">
+            <div class="mt-6 pt-4 border-t border-gray-700 flex justify-center w-full">
                 <button @click="salvarPagamento" :disabled="pagamentosAtuais.length === 0"
                     class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:bg-blue-500 transition disabled:opacity-50 disabled:cursor-not-allowed">
                     Registrar Pagamento(s)

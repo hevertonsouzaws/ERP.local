@@ -50,7 +50,6 @@ export const useClienteStore = defineStore('clientes', () => {
         }
     }
 
-
     return {
         clientes,
         carregando,

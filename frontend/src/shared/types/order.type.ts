@@ -29,6 +29,8 @@ export interface Pedido {
     uuid: string;
     clienteUuidd: string;
     clienteNome: string;
+    clienteTelefone: string; 
+    clienteEmail?: string;
     dataEntrega: string;
     horarioEntrega?: string;
     itens: PedidoItemPeca[]; 

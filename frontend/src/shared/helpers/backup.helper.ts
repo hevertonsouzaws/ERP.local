@@ -31,7 +31,7 @@ function iniciarDownload(data: object, filenamePrefix: string): void {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    showToast('✅ Download iniciado com sucesso!', 'success');
+    showToast('Download iniciado com sucesso!', 'success');
 }
 
 export async function exportarBackupClientes(): Promise<void> {
@@ -44,7 +44,7 @@ export async function exportarBackupClientes(): Promise<void> {
         };
         iniciarDownload(backupData, 'backup_clientes');
     } catch (error) {
-        showToast('❌ Falha ao exportar clientes. Verifique o acesso ao IndexedDB.', 'error');
+        showToast('Falha ao exportar clientes. Verifique o acesso ao IndexedDB.', 'error');
     }
 }
 
@@ -58,7 +58,7 @@ export async function exportarBackupPedidos(): Promise<void> {
         };
         iniciarDownload(backupData, 'backup_pedidos');
     } catch (error) {
-        showToast('❌ Falha ao exportar pedidos. Verifique o acesso ao IndexedDB.', 'error');
+        showToast('Falha ao exportar pedidos. Verifique o acesso ao IndexedDB.', 'error');
     }
 }
 
@@ -97,12 +97,12 @@ export async function importarBackupClientes(file: File): Promise<void> {
                 resolve();
             } catch (e) {
                 const errorMessage = (e as Error).message || 'Formato de arquivo ou dados de clientes inválidos.';
-                showToast(`❌ Erro ao importar clientes: ${errorMessage}`, 'error');
+                showToast(`Erro ao importar clientes: ${errorMessage}`, 'error');
                 reject(errorMessage); 
             }
         };
         reader.onerror = () => {
-            showToast('❌ Erro ao ler o arquivo de clientes.', 'error');
+            showToast('Erro ao ler o arquivo de clientes.', 'error');
             reject('Erro ao ler o arquivo de clientes.');
         };
         reader.readAsText(file);
@@ -138,12 +138,12 @@ export async function importarBackupPedidos(file: File): Promise<void> {
 
             } catch (error) {
                 const errorMessage = (error as Error).message || 'Formato de arquivo ou dados de pedidos inválidos.';
-                showToast(`❌ Erro ao importar pedidos: ${errorMessage}`, 'error');
+                showToast(`Erro ao importar pedidos: ${errorMessage}`, 'error');
                 reject(errorMessage);
             }
         };
         reader.onerror = () => {
-            showToast('❌ Erro ao ler o arquivo de pedidos.', 'error');
+            showToast('Erro ao ler o arquivo de pedidos.', 'error');
             reject('Erro ao ler o arquivo de pedidos.');
         };
         reader.readAsText(file);

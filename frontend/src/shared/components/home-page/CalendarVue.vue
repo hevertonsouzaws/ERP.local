@@ -45,10 +45,13 @@ const selecionarDia = (dia: string) => {
 
 const pedidosPorDia = computed(() => {
     const contagem: { [key: string]: number } = {};
+    const mesString = String(mesAtual.value + 1).padStart(2, '0');
+    const prefixoData = `${anoAtual.value}-${mesString}`;
 
     pedidoStore.pedidos.forEach((pedido: Pedido) => {
         const data = pedido.dataEntrega;
-        if (data.startsWith(`${anoAtual.value}-${String(mesAtual.value + 1).padStart(2, '0')}`)) {
+
+        if (data && typeof data === 'string' && data.startsWith(prefixoData)) {
             contagem[data] = (contagem[data] || 0) + 1;
         }
     });
@@ -68,17 +71,16 @@ onMounted(() => {
 <template>
     <div class="w-full border border-gray-500 py-3 p-6 rounded-xl shadow-xl text-white">
         <div class="flex justify-between items-center mb-4">
-            <button @click="mudarMes(-1)"
-                class="p-2 rounded-full text-white hover:bg-gray-600 transition">
+            <button @click="mudarMes(-1)" class="p-2 rounded-full text-white hover:bg-gray-600 transition">
                 <i class="fi fi-rr-angle-left text-xl"></i>
             </button>
 
             <h3 class="text-xl font-semibold capitalize">{{ nomeMes }}</h3>
 
-            <button @click="mudarMes(1)"
-                class="p-2 rounded-full text-white hover:bg-gray-600 transition">
+            <button @click="mudarMes(1)" class="p-2 rounded-full text-white hover:bg-gray-600 transition">
                 <i class="fi fi-rr-angle-right text-xl"></i>
             </button>
+
         </div>
 
         <div class="flex mb-2">

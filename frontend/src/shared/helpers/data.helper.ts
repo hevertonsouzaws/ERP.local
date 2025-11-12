@@ -47,8 +47,13 @@ export function getPrimeiroDiaSemana(ano: number, mes: number): number {
     return new Date(ano, mes, 1).getDay();
 }
 
-export function formatarDataParaExibicao(data: string): string {
+export function formatarDataParaExibicao(data: string | null | undefined): string {
+    if (!data) {
+        return '';
+    }
+    
     const dateObj = new Date(data.replace(/-/g, '/')); 
+    
     if (isNaN(dateObj.getTime())) {
         return '';
     }

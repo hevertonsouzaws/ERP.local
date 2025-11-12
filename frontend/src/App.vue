@@ -14,3 +14,56 @@ import ToastNotification from './shared/components/layout/ToastNotification.vue'
     </section>
   </section>
 </template>
+
+<style>
+:root,
+body {
+  scrollbar-width: thin;
+  scrollbar-color: #4A5568 #1A202C;
+}
+
+:root::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+:root::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: #1A202C;
+}
+
+:root::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: #4A5568;
+  border-radius: 5px;
+  border: 2px solid #1A202C;
+}
+
+:root::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+div::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+div::-webkit-scrollbar-track {
+  background: #2D3748;
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb {
+  background: #000;
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb:hover {
+  background: #0e2085;
+}
+
+div {
+  scrollbar-width: thin;
+  scrollbar-color: #2204ce #1f2024;
+}</style>

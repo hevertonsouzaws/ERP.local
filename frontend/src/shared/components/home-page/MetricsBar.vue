@@ -19,8 +19,7 @@ pedidoStore.carregarMetricasAtuais();
             <h1 class="text-lg">Olá! Seja bem vindo(a)</h1>
         </div>
 
-        <div
-            class="w-full py-3 p-4 border border-gray-400 shadow-xl rounded-xl 
+        <div class="w-full py-3 p-4 border border-gray-400 shadow-xl rounded-xl 
                     flex justify-between items-center transition duration-300 mt2 hover:scale-[1.02]">
             <div>
                 <p class="text-sm font-medium">Clientes</p>
@@ -40,7 +39,6 @@ pedidoStore.carregarMetricasAtuais();
                     {{ formatCurrency(pedidoStore.metricasAtuais?.receitaTotal || 0) }}
                 </p>
             </div>
-
             <router-link to="/financas" class="py-3">
                 <i class="fi fi-rr-wallet text-2xl text-white bg-green-900/70 py-3 p-4 rounded-full"></i>
             </router-link>

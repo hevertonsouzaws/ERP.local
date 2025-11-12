@@ -2,7 +2,6 @@
 import MetricsBar from '@/shared/components/home-page/MetricsBar.vue';
 import CalendarView from '@/shared/components/home-page/CalendarVue.vue';
 import DailyOrdersSidebar from '@/shared/components/home-page/DailyOrdersSideBar.vue';
-import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 import { ref } from 'vue';
 
 const isModalOpen = ref(false);
@@ -13,7 +12,6 @@ const isModalOpen = ref(false);
         <MetricsBar />
 
         <div class="flex flex-wrap justify-between gap-6">
-
             <div class="w-full lg:w-[calc(65%-1.5rem)]">
                 <CalendarView />
             </div>
@@ -21,14 +19,13 @@ const isModalOpen = ref(false);
             <div class="w-full lg:w-[calc(35%-1.5rem)]">
                 <DailyOrdersSidebar />
             </div>
-
         </div>
 
-        <button @click="isModalOpen = true"
-            class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
-            <i class="fi fi-rr-plus"></i>
-        </button>
-        
-        <CreateOrder v-if="isModalOpen" @close="isModalOpen = false" />
+        <router-link to="criarpedido">
+            <button
+                class="fixed bottom-10 right-10 w-20 h-20 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
+                <i class="fi fi-rr-plus"></i>
+            </button>
+        </router-link>
     </div>
 </template>

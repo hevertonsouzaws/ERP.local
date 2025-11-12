@@ -9,6 +9,12 @@
                     <router-link to="/">
                         <i class="fi fi-rr-house-chimney"></i>
                     </router-link>
+                    <router-link to="/criarpedido">
+                        <i class="fi fi-rr-plus"></i>
+                    </router-link>
+                    <router-link to="/zap">
+                       <i class="fi fi-rr-paper-plane"></i>
+                    </router-link>
                     <router-link to="/clientes">
                         <i class="fi fi-rr-user"></i>
                     </router-link>

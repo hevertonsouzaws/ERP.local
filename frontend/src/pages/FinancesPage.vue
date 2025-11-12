@@ -39,10 +39,10 @@ const limiteAlvoFormatado = computed(() => {
             <FinancialMetricCard title="Total Recebido" :value="metricas.valorPagoEmPedidos" icon="fi fi-rr-credit-card"
                 color-class="text-green-400" :is-currency="true" />
 
-            <FinancialMetricCard title="Valores pendentes" :value="metricas.valorPendenteEmPedidos"
+            <FinancialMetricCard title="Pendentes" :value="metricas.valorPendenteEmPedidos"
                 icon="fi fi-rr-money-bill-wave" color-class="text-yellow-400" :is-currency="true" />
 
-            <FinancialMetricCard title="Pedidos Concluídos/Total" :value="metricas.pedidosConcluidos"
+            <FinancialMetricCard title="Concluídos" :value="metricas.pedidosConcluidos"
                 icon="fi fi-rr-list-check" color-class="text-blue-400">
                 <template #default>
                     <p class="text-3xl font-bold mt-1 text-blue-400">

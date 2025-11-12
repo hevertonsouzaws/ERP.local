@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Pedido, PedidoStatus, PedidoItemPeca } from '@/shared/types/order.type';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
-import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
+import { formatarDataParaExibicao, formatarTelefone } from '@/shared/helpers/data.helper';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -63,11 +63,11 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
 <template>
     <div
-        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 md:w-[48.5%] 2xl:w-[32%] ">
+        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 lg:w-[48.5%] 2xl:w-[32%] ">
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">
                 <i class="fi fi-rr-user text-white mr-2 text-xl"></i>
-                <p class="font-semibold text-sm text-white">{{ pedido.clienteNome }}</p>
+                <p class="font-semibold text-sm text-white">{{ pedido.clienteNome }} - {{ formatarTelefone(pedido?.clienteTelefone) || 'sem telefone' }}</p>
             </div>
             <span :class="['text-xs py-1 px-4 rounded-full uppercase', getStatusClass(pedido.status)]">
                 {{ pedido.status }}

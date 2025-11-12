@@ -13,7 +13,7 @@ export function useClientFormLogic() {
 
     const clientesFiltrados = computed(() => {
         if (!clienteBusca.value) {
-            return clienteStore.clientes.slice(0, 5); 
+            return clienteStore.clientes.slice(0, 5);
         }
         return clienteStore.clientes.filter(c =>
             c.nome.toLowerCase().includes(clienteBusca.value.toLowerCase())
@@ -21,13 +21,12 @@ export function useClientFormLogic() {
     });
 
     const selecionarCliente = (cliente: Cliente) => {
-        draftStore.setCliente(cliente); 
-        clienteBusca.value = cliente ? cliente.nome : ''; 
+        draftStore.setCliente(cliente);
+        clienteBusca.value = cliente ? cliente.nome : '';
     };
 
     const cadastrarESelecionarCliente = async () => {
         if (!novoClienteData.value.nome) {
-            console.error('O nome do novo cliente é obrigatório.'); 
             return;
         }
 
@@ -37,12 +36,18 @@ export function useClientFormLogic() {
             const clienteRecemCadastrado = clienteStore.clientes.find(c => c.uuid === uuid);
             if (clienteRecemCadastrado) {
                 selecionarCliente(clienteRecemCadastrado);
-                mostrarNovoCliente.value = false; 
+                mostrarNovoCliente.value = false;
             }
         } else {
-            console.error('Erro ao cadastrar cliente.');
+            return;
         }
     }
+
+    const resetClientState = () => {
+        clienteBusca.value = '';
+        mostrarNovoCliente.value = false;
+        novoClienteData.value = { nome: '', telefone: '' };
+    };
 
     return {
         clienteBusca,
@@ -54,6 +59,7 @@ export function useClientFormLogic() {
 
         selecionarCliente,
         cadastrarESelecionarCliente,
+        resetClientState,
     };
 }
 

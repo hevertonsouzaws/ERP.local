@@ -33,8 +33,6 @@ export const usePedidoStore = defineStore('pedidos', () => {
             .sort((a, b) => (a.horarioEntrega || '').localeCompare(b.horarioEntrega || ''));
     });
 
-    const getValorTotalPedido = (pedido: Pedido) => calcularValorTotalPedido(pedido);
-
     const getPedidoByUuid = (uuid: string) => computed(() => pedidos.value.find(p => p.uuid === uuid));
 
     async function carregarPedidos() {
@@ -110,15 +108,21 @@ export const usePedidoStore = defineStore('pedidos', () => {
         await calcularMetricasGerais();
     }
 
-    async function adicionarPedido(novoPedidoData: Omit<Pedido, 'uuid'>): Promise<string | undefined> {
+    async function adicionarPedido(
+        novoPedidoData: Omit<Pedido, 'uuid' | 'clienteTelefone' | 'clienteEmail'> & {
+            clienteTelefone: string,
+            clienteEmail?: string
+        }
+    ): Promise<string | undefined> {
         try {
             const uuid = generateUUID();
             const pedidoPlano: Pedido = {
                 descontoPorcentagem: novoPedidoData.descontoPorcentagem || 0,
                 ...JSON.parse(JSON.stringify(toRaw(novoPedidoData))),
-                uuid: uuid
+                uuid: uuid,
+                clienteTelefone: novoPedidoData.clienteTelefone,
+                clienteEmail: novoPedidoData.clienteEmail,
             };
-
             await db.pedidos.add(pedidoPlano);
             await carregarPedidos();
             await calcularMetricasGerais();
@@ -187,6 +191,8 @@ export const usePedidoStore = defineStore('pedidos', () => {
         novosItens: PedidoItemPeca[],
         novosPagamentos: PagamentoRegistro[],
         novoDescontoPorcentagem: number,
+        novaDataEntrega: string,
+        novoHorarioEntrega: string,
     ) {
         try {
             const pedido = pedidos.value.find(p => p.uuid === pedidoUuid);
@@ -195,7 +201,7 @@ export const usePedidoStore = defineStore('pedidos', () => {
             const novoPedidoCalculo: Pedido = {
                 ...pedido,
                 itens: novosItens,
-                descontoPorcentagem: novoDescontoPorcentagem
+                descontoPorcentagem: novoDescontoPorcentagem,
             };
 
             const novoValorPago = novosPagamentos.reduce((total, p) => total + p.valor, 0);
@@ -205,6 +211,8 @@ export const usePedidoStore = defineStore('pedidos', () => {
                 pagamentos: JSON.parse(JSON.stringify(toRaw(novosPagamentos))),
                 valorPago: novoValorPago,
                 descontoPorcentagem: novoDescontoPorcentagem,
+                dataEntrega: novaDataEntrega,
+                horarioEntrega: novoHorarioEntrega,
             });
 
             const pedidoIndex = pedidos.value.findIndex(p => p.uuid === pedidoUuid);
@@ -213,6 +221,8 @@ export const usePedidoStore = defineStore('pedidos', () => {
                 pedidos.value[pedidoIndex].pagamentos = novosPagamentos;
                 pedidos.value[pedidoIndex].valorPago = novoValorPago;
                 pedidos.value[pedidoIndex].descontoPorcentagem = novoDescontoPorcentagem;
+                pedidos.value[pedidoIndex].dataEntrega = novaDataEntrega;
+                pedidos.value[pedidoIndex].horarioEntrega = novoHorarioEntrega;
             }
 
             await calcularMetricasGerais();

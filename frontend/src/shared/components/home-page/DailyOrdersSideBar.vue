@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatarDataParaExibicao } from '@/shared/helpers/data.helper';
+import { formatCurrency } from '@/shared/helpers/currency.helper';
 import type { PedidoStatus } from '@/shared/types/order.type';
 
 const pedidoStore = usePedidoStore();
@@ -46,7 +47,7 @@ const getStatusClass = (status: PedidoStatus) => {
                             pedido.horarioEntrega }}
                         </p>
                         <p class="text-sm text-white"><span class="font-medium">Valor:</span> {{
-                            pedidoStore.calcularValorTotalPedido(pedido).toFixed(2) }}
+                            formatCurrency(pedidoStore.calcularValorTotalPedido(pedido)) }}
                         </p>
                     </div>
                 </div>

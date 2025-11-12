@@ -6,7 +6,7 @@ import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
 import { useItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
 import { usePaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLogic.helper';
-import { useDateLogic } from '@/shared/helpers/create-order/dateLogic';
+import { useDateLogic } from '@/shared/helpers/create-order/dateLogic'; // <-- Importado
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
 import { useDiscountLogic } from '@/shared/helpers/create-order/discountLogic' 
@@ -15,7 +15,7 @@ import ClientSelector from '../create-order/ClientSelector.vue';
 import ItemAdder from '../create-order/ItemAdder.vue';
 import PaymentForm from '../create-order/PaymentForm.vue';
 import DateSelector from '../create-order/DateSelector.vue';
-import DiscountForm from './DescountForm.vue';
+import DiscountForm from '../create-order/DescountForm.vue';
 
 
 const props = defineProps<{
@@ -63,12 +63,22 @@ const atualizarPedido = async () => {
     try {
         const novosItens = itemLogic.itensDoPedido.value;
         const novoDesconto = discountLogic.descontoPorcentagem.value;
+        const novosPagamentos = paymentLogic.pagamentosRegistrados.value; 
+        const novaDataEntrega = dateLogic.dataEntrega.value; 
+        const novoHorarioEntrega = dateLogic.horarioEntrega.value;
+
+        if (!novaDataEntrega) {
+            showToast('Selecione uma data e hora de entrega válida.', 'warning');
+            return;
+        }
 
         await pedidoStore.atualizarItensOuPagamentosPedido(
             pedidoUUID,
             novosItens,
-            props.pedido.pagamentos,
+            novosPagamentos, 
             novoDesconto,
+            novaDataEntrega,
+            novoHorarioEntrega,
         );
 
         showToast(`Pedido atualizado com sucesso.`, 'success');
@@ -85,7 +95,7 @@ const atualizarPedido = async () => {
 
 <template>
     <div class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50" @click.self="$emit('close')">
-        <div class="bg-gray-800 rounded-xl shadow-2xl w-full lg:max-w-7xl p-6 h-[90vh] flex flex-col">
+        <div class="bg-gray-900 rounded-xl shadow-2xl w-full lg:max-w-7xl p-6 h-[90vh] flex flex-col">
 
             <div class="flex justify-between items-center pb-4 border-b border-gray-700 mb-4">
                 <h2 class="text-2xl font-bold text-white flex items-center">
@@ -106,7 +116,7 @@ const atualizarPedido = async () => {
                     </div>
 
                     <div class="col-span-12 lg:col-span-4 space-y-6">
-                        <DateSelector :date-logica="dateLogic" :disabled="true" /> 
+                        <DateSelector :date-logica="dateLogic" /> 
                         <DiscountForm :discount-logica="discountLogic" /> 
                         <PaymentForm :payment-logica="paymentLogic" :is-editing="true" />
                     </div>

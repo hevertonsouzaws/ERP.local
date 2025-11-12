@@ -5,6 +5,8 @@ import PedidosPage from '@/pages/OrdersPage.vue';
 import BackupPage from '@/pages/BackupPage.vue';
 import ServiceCatologPage from '@/pages/ServiceCatologPage.vue';
 import FinancesPage from '@/pages/FinancesPage.vue';
+import CreateOrderPage from '@/pages/CreateOrderPage.vue';
+import PedidoSelectorPage from '@/pages/PedidoSelectorPage.vue';
 
 const router = createRouter({
   history: createWebHashHistory(), 
@@ -13,6 +15,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: Home,
+    },
+    {
+      path: '/criarpedido',
+      name: 'criarpedido',
+      component: CreateOrderPage,
     },
     {
       path: '/clientes',
@@ -39,6 +46,12 @@ const router = createRouter({
       name: 'financas',
       component: FinancesPage,
     },
+    {
+      path: '/zap',
+      name: 'zap',
+      component: PedidoSelectorPage,
+    },
+    
   ],
 });
 

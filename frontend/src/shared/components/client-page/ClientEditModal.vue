@@ -48,7 +48,7 @@ const salvarEdicao = async () => {
     <div v-if="cliente" class="fixed inset-0 bg-gray-950 bg-opacity-80 flex justify-center items-center z-50 p-4"
         @click.self="emit('close')">
         
-        <div class="bg-gray-950 border border-gray-500 p-8 rounded-2xl shadow-2xl w-full max-w-md relative text-white">
+        <div class="bg-gray-950 border border-gray-200 p-8 rounded-2xl shadow-2xl w-full max-w-md relative text-white">
             <button @click="emit('close')" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i
                     class="fi fi-rr-cross text-xl"></i></button>
             <h2 class="text-xl mb-6 text-white border-b border-gray-700 pb-2">

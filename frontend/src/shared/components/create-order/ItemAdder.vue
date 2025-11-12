@@ -6,12 +6,12 @@ defineProps<{
 </script>
 
 <template>
-    <div class="space-y-3 p-4 bg-gray-900 rounded-lg border border-gray-700">
-        <h3 class="font-bold flex items-center text-lg text-blue-400">
+    <div class="space-y-3 p-4 rounded-lg border border-gray-400">
+        <h3 class="font-bold flex items-center text-lg text-white">
             <i class="fi fi-rr-hanger mr-2"></i> Itens do Pedido
         </h3>
 
-        <div class="p-3 bg-gray-800 rounded-lg space-y-2 border-b border-gray-700 pb-4">
+        <div class="p-3 rounded-lg space-y-2 border border-gray-500 pb-4">
             <label class="block text-sm font-medium text-gray-200">Passo 1: Adicionar Peça</label>
             <div class="flex space-x-2">
                 <select v-model="itemLogica.selectedGarmentTypeUuid.value"
@@ -26,14 +26,14 @@ defineProps<{
                     Adicionar Peça
                 </button>
             </div>
-            <p v-if="itemLogica.pecaSelecionadaParaServico.value" class="text-sm text-green-400 mt-2">
-                Peça Ativa: **{{ itemLogica.pecaSelecionadaParaServico.value.garmentName }}**. Adicione serviços abaixo.
+            <p v-if="itemLogica.pecaSelecionadaParaServico.value" class="text-sm text-white mt-2">
+                Peça Ativa: <strong class="text-purple-400">{{ itemLogica.pecaSelecionadaParaServico.value.garmentName }}</strong>. Adicione serviços abaixo.
                 <button @click="itemLogica.pecaSelecionadaParaServico.value = null"
                     class="text-xs text-red-400 ml-3">Limpar seleção</button>
             </p>
         </div>
 
-        <div class="p-3 bg-gray-800 rounded-lg space-y-2"
+        <div class="p-3 border border-gray-500 rounded-lg space-y-2"
             :class="{ 'opacity-50 pointer-events-none': !itemLogica.pecaSelecionadaParaServico.value }">
             <label class="block text-sm font-medium text-gray-200">Passo 2: Adicionar Serviço</label>
             <div class="flex space-x-2">
@@ -67,7 +67,7 @@ defineProps<{
             </div>
 
             <div v-for="item in itemLogica.itensDoPedido.value" :key="item.uuid"
-                class="bg-gray-700 p-3 rounded text-sm border-l-4" :class="{
+                class="bg-gray-800 p-3 rounded text-sm border-l-4" :class="{
                     'border-l-purple-500': itemLogica.pecaSelecionadaParaServico.value?.uuid === item.uuid,
                     'border-l-transparent': itemLogica.pecaSelecionadaParaServico.value?.uuid !== item.uuid
                 }">

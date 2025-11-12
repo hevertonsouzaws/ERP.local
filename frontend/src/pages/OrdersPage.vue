@@ -4,9 +4,8 @@ import { usePedidoStore } from '@/shared/stores/pedido.store';
 import type { Pedido, PedidoStatus } from '@/shared/types/order.type';
 import { showToast } from '@/shared/helpers/toastState';
 import ReceberPagamentoModal from '@/shared/components/orders-page/AddPaymentModal.vue';
-import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue'; 
+import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue';
 import PedidoCard from '@/shared/components/orders-page/OrderCard.vue';
-import CreateOrder from '@/shared/components/create-order/CreateOrder.vue';
 
 const store = usePedidoStore();
 const filtroStatus = ref<PedidoStatus | 'TODOS'>('TODOS');
@@ -16,8 +15,6 @@ const mostrarModalPagamento = ref(false);
 
 const pedidoParaEditar = ref<Pedido | null>(null);
 const mostrarModalEdicao = ref(false);
-
-const isModalOpen = ref(false);
 
 onMounted(() => {
     if (!store.carregando) {
@@ -74,7 +71,7 @@ const abrirModalEdicao = (pedido: Pedido) => {
 
 const fecharModalEdicao = () => {
     mostrarModalEdicao.value = false;
-    pedidoParaEditar.value = null; 
+    pedidoParaEditar.value = null;
 };
 
 const handleEdicaoSucesso = () => {
@@ -100,34 +97,25 @@ const handleEdicaoSucesso = () => {
         </div>
 
         <div class="rounded-xl shadow-2xl">
-            <div  class="flex flex-row justify-left flex-wrap gap-5">
+            <div class="flex flex-row justify-left flex-wrap gap-5">
                 <PedidoCard v-for="pedido in pedidosFiltrados" :key="pedido.uuid" :pedido="pedido"
-                    @change-status="mudarStatus" 
-                    @open-payment-modal="abrirModalPagamento"
-                    @open-edit-modal="abrirModalEdicao" /> 
+                    @change-status="mudarStatus" @open-payment-modal="abrirModalPagamento"
+                    @open-edit-modal="abrirModalEdicao" />
             </div>
         </div>
 
-        <ReceberPagamentoModal 
-            v-if="mostrarModalPagamento && pedidoSelecionado" 
-            :pedido="pedidoSelecionado" 
-            @close="fecharModalPagamento"
-            @payment-success="handlePagamentoSucesso" 
-        />
+        <ReceberPagamentoModal v-if="mostrarModalPagamento && pedidoSelecionado" :pedido="pedidoSelecionado"
+            @close="fecharModalPagamento" @payment-success="handlePagamentoSucesso" />
 
-        <EditOrderModal
-            v-if="mostrarModalEdicao && pedidoParaEditar"
-            :pedido="pedidoParaEditar"
-            @close="fecharModalEdicao"
-            @edit-success="handleEdicaoSucesso"
-        />
+        <EditOrderModal v-if="mostrarModalEdicao && pedidoParaEditar" :pedido="pedidoParaEditar"
+            @close="fecharModalEdicao" @edit-success="handleEdicaoSucesso" />
 
-        <button @click="isModalOpen = true"
-            class="fixed bottom-10 right-10 w-16 h-16 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
-            <i class="fi fi-rr-plus"></i>
-        </button>
+        <router-link to="criarpedido">
+            <button
+                class="fixed bottom-10 right-10 w-20 h-20 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
+                <i class="fi fi-rr-plus"></i>
+            </button>
+        </router-link>
 
-        <CreateOrder v-if="isModalOpen" @close="isModalOpen = false" />
-        
     </div>
 </template>

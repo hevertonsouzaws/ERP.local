@@ -27,13 +27,13 @@ function calcularValorSubtotalItens(itens: PedidoItemPeca[]): number {
 export const useDraftOrderStore = defineStore('draft-order', () => {
     const rascunho = ref<DraftOrder>({
         cliente: null,
-        dataEntrega: getDataHoraHojeString(),
+        dataEntrega: getDataHojeString(),
         horarioEntrega: '',
         itens: [],
         pagamentos: [],
     });
 
-    const descontoPorcentagem = ref(0); // ESTADO SEPARADO
+    const descontoPorcentagem = ref(0); 
 
     const subtotal = computed(() => calcularValorSubtotalItens(rascunho.value.itens));
 
@@ -77,7 +77,6 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         rascunho.value.itens = JSON.parse(JSON.stringify(toRaw(pedido.itens)));
         rascunho.value.pagamentos = JSON.parse(JSON.stringify(toRaw(pedido.pagamentos)));
         
-        // 🚨 CORREÇÃO CRÍTICA: Sincronizar o ref de desconto
         descontoPorcentagem.value = pedido.descontoPorcentagem;
     }
 
@@ -146,6 +145,7 @@ export const useDraftOrderStore = defineStore('draft-order', () => {
         return {
             clienteUuidd: rascunho.value.cliente.uuid,
             clienteNome: rascunho.value.cliente.nome,
+            clienteTelefone: rascunho.value.cliente.telefone,
             dataEntrega: rascunho.value.dataEntrega,
             horarioEntrega: rascunho.value.horarioEntrega,
             itens: JSON.parse(JSON.stringify(toRaw(rascunho.value.itens))),
