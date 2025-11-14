@@ -54,7 +54,7 @@ const finalizarPedido = async () => {
         const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
 
         if (uuidSalvo) {
-            showToast(`Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`, 'success');
+            showToast(`Pedido Criado com Sucesso!`, 'success');
 
             draftStore.resetDraft();
             emit('close');
@@ -65,7 +65,7 @@ const finalizarPedido = async () => {
         }
 
     } catch (error) {
-        console.error('Erro fatal ao finalizar pedido:', error);
+        console.error('Erro ao finalizar pedido:', error);
         showToast(`Erro ao salvar: Ocorreu um erro desconhecido.`, 'error');
     }
 };

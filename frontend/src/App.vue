@@ -1,14 +1,29 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import Environment from '@components/config/Environment.vue';
 import AppHeader from './shared/components/layout/AppHeader.vue';
 import ToastNotification from './shared/components/layout/ToastNotification.vue';
+import { useUserStore } from './shared/stores/user.store';
+import { onMounted } from 'vue';
+
+const route = useRoute();
+
+const userStore = useUserStore();
+
+onMounted(async () => {
+  await userStore.loadUsers();
+});
+
+const isLoginPage = computed(() => route.name === 'login');
 </script>
 
 <template>
   <section class="w-full min-h-auto bg-gray-950/95 min-h-screen text-gray-200">
-    <AppHeader />
+    <AppHeader v-if="!isLoginPage" />
     <Environment />
-    <section class="lg:max-w-[95%] text-white p-8 m-auto">
+
+    <section :class="{ 'w-full lg:max-w-[95%] text-white p-8 m-auto': !isLoginPage }">
       <router-view> </router-view>
       <ToastNotification />
     </section>
@@ -18,6 +33,8 @@ import ToastNotification from './shared/components/layout/ToastNotification.vue'
 <style>
 :root,
 body {
+  padding: 0px;
+  box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: #4A5568 #1A202C;
 }

@@ -23,7 +23,7 @@ const isModalOpen = ref(false);
 
         <router-link to="criarpedido">
             <button
-                class="fixed bottom-10 right-10 w-20 h-20 bg-blue-600 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-500 hover:scale-105 z-20">
+                class="fixed bottom-10 right-10 w-20 h-20 bg-blue-950 border-2 border-blue-500  rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-800 hover:scale-105 z-20">
                 <i class="fi fi-rr-plus"></i>
             </button>
         </router-link>

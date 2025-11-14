@@ -3,6 +3,7 @@ import type { Cliente } from "@/shared/types/cliente.type";
 import type { Pedido } from "@/shared/types/order.type";
 import type { Metrica } from "@/shared/types/metrica.type";
 import type { IGarmentType, IService } from "@/shared/types/catalog.type"; 
+import type { LoginSession, User } from "@/shared/types/user.type"; 
 
 export class AppDB extends Dexie {
     clientes!: Table<Cliente, string>;
@@ -10,16 +11,20 @@ export class AppDB extends Dexie {
     metricas!: Table<Metrica, string>;
     garmentTypes!: Table<IGarmentType, string>; 
     services!: Table<IService, string>;
+    loginSessions!: Table<LoginSession, string>
+    users!: Table<User, string>;
 
     constructor() {
         super('SistemaComandasLocalDB');
-        this.version(5).stores({ 
+        this.version(7).stores({ 
             clientes: 'uuid, nome, *telefone', 
             pedidos: 'uuid, clienteUuidd, dataEntrega, status', 
             metricas: 'mesAno',
             garmentTypes: 'uuid, name', 
             services: 'uuid, name, price', 
-        });
+            loginSessions: 'uuid, userUuid, loginTime',
+            users: 'uuid, name, role', 
+        })
     }
 }
 

@@ -2,12 +2,21 @@
 import { useClienteStore } from '@/shared/stores/cliente.store';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatCurrency } from '@/shared/helpers/format.helper';
+import { useUserStore } from '@/shared/stores/user.store';
+import { computed } from 'vue';
 
 const clienteStore = useClienteStore();
 const pedidoStore = usePedidoStore();
+const loggedUserStore = useUserStore();
 
 clienteStore.carregarClientes();
 pedidoStore.carregarMetricasAtuais();
+
+const userName = computed (() => {
+    return loggedUserStore.currentUser?.name || 'Visitante'
+})
+
+
 </script>
 
 <template>
@@ -16,7 +25,7 @@ pedidoStore.carregarMetricasAtuais();
                     flex justify-right items-center transition duration-300 mt2 hover:scale-[1.02]">
             <i class="fi-rr-user text-3xl text-white
              py-2.5 p-3.5 rounded-full"></i>
-            <h1 class="text-lg">Olá! Seja bem vindo(a)</h1>
+            <h1 class="text-lg">Bem vindo(a) <span class="font-semibold">{{ userName }}</span>!</h1>
         </div>
 
         <div class="w-full py-3 p-4 border border-gray-400 shadow-xl rounded-xl 

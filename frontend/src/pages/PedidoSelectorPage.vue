@@ -30,7 +30,7 @@ const selecionarPedido = (pedido: Pedido) => {
         <div class="grid grid-cols-12 gap-8 ">
             <div class="col-span-12 lg:col-span-6 space-y-3 h-[70vh] overflow-y-auto border border-gray-500 p-5 rounded-xl">
                 <div class="bg-gray-800 sticky  top-0 z-10 rounded-xl">
-                    <h2 class="text-xl font-semibold text-blue-400 p-2 -m-">
+                    <h2 class="text-xl font-semibold text-white p-2 -m-">
                         Selecione um Pedido ({{ pedidoStore.pedidos.length }})
                     </h2>
                 </div>
