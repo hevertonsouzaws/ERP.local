@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { formatNumberAsCurrency } from './currency.helper';
 import { type Pedido, type PagamentoRegistro, type FormaPagamento } from '@/shared/types/order.type';
 
@@ -9,21 +9,25 @@ interface ExportData {
 }
 
 const tableStyles = {
-    headerColor: [44, 62, 80],       
-    borderColor: [200, 200, 200],    
-    alternateRowColor: [247, 247, 247],
-    totalRowColor: [220, 220, 220],   
-    textColor: [0, 0, 0],            
-    headerTextColor: [255, 255, 255], 
-    totalValueColor: [0, 0, 0],      
+    headerColor: [44, 62, 80] as [number, number, number],
+    borderColor: [200, 200, 200] as [number, number, number],
+    alternateRowColor: [247, 247, 247] as [number, number, number],
+    totalRowColor: [220, 220, 220] as [number, number, number],
+    textColor: [0, 0, 0] as [number, number, number],
+    headerTextColor: [255, 255, 255] as [number, number, number],
+    totalValueColor: [0, 0, 0] as [number, number, number],
 };
 
 const consolidarDados = (pedidos: Pedido[], mesFiltro: string | null) => {
     const distribuicao: Record<FormaPagamento, number> = {
-        'PIX': 0, 'DEBITO': 0, 'CREDITO': 0, 'DINHEIRO': 0, 'OUTRO': 0,
-    } as Record<FormaPagamento, number>;
+        PIX: 0,
+        DEBITO: 0,
+        CREDITO: 0,
+        DINHEIRO: 0,
+        OUTRO: 0,
+    };
 
-    const transacoesDetalhe: { pedido: Pedido, pagamento: PagamentoRegistro }[] = [];
+    const transacoesDetalhe: { pedido: Pedido; pagamento: PagamentoRegistro }[] = [];
     let totalPago = 0;
 
     const [anoFiltro, mesFiltroStr] = mesFiltro ? mesFiltro.split('-') : [null, null];
@@ -31,23 +35,17 @@ const consolidarDados = (pedidos: Pedido[], mesFiltro: string | null) => {
     pedidos.forEach(pedido => {
         pedido.pagamentos.forEach(pagamento => {
             const dataPagamento = new Date(pagamento.dataRecebimento);
-
             let deveIncluir = true;
+
             if (mesFiltro) {
                 const dataAno = dataPagamento.getFullYear().toString();
                 const dataMes = (dataPagamento.getMonth() + 1).toString().padStart(2, '0');
-
-                if (dataAno !== anoFiltro || dataMes !== mesFiltroStr) {
-                    deveIncluir = false;
-                }
+                if (dataAno !== anoFiltro || dataMes !== mesFiltroStr) deveIncluir = false;
             }
 
             if (deveIncluir) {
                 totalPago += pagamento.valor;
-                if (distribuicao[pagamento.forma as FormaPagamento] !== undefined) {
-                    distribuicao[pagamento.forma as FormaPagamento] += pagamento.valor;
-                }
-
+                distribuicao[pagamento.forma as FormaPagamento] += pagamento.valor;
                 transacoesDetalhe.push({ pedido, pagamento });
             }
         });
@@ -77,38 +75,34 @@ export const exportFinanceReportToPDF = ({ pedidos, mesFiltro }: ExportData) => 
     let y = 10;
 
     doc.setFontSize(18);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); // PRETO
+    doc.setTextColor(...tableStyles.textColor);
     doc.text(titulo, 14, y);
     y += 8;
 
     doc.setFontSize(12);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); // PRETO
     doc.text(subTitulo, 14, y);
     y += 7;
 
     doc.setFontSize(10);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); // PRETO
     doc.text(`Gerado em: ${dataGeracao}`, 14, y);
     y += 10;
 
-    doc.setFillColor(230, 230, 230);
+    doc.setFillColor(...([230, 230, 230] as [number, number, number]));
     doc.rect(14, y, 182, 12, 'F');
 
     doc.setFontSize(12);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); 
-    doc.setFont('helvetica', 'normal');
     doc.text("TOTAL RECEBIDO NO PERÍODO:", 16, y + 8);
 
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(tableStyles.totalValueColor[0], tableStyles.totalValueColor[1], tableStyles.totalValueColor[2]); 
+    doc.setTextColor(...tableStyles.totalValueColor);
     doc.text(formatNumberAsCurrency(totalPago), 196, y + 8, { align: 'right' });
 
     y += 20;
 
     doc.setFontSize(14);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); 
     doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...tableStyles.textColor);
     doc.text("Resumo de Recebimentos por Forma", 14, y);
     y += 7;
 
@@ -119,12 +113,16 @@ export const exportFinanceReportToPDF = ({ pedidos, mesFiltro }: ExportData) => 
 
     for (const [tipo, valor] of distribuicaoOrdenada) {
         const percentual = totalPago > 0 ? ((valor / totalPago) * 100).toFixed(1) + '%' : '0.0%';
-        distribuicaoData.push([tipo, formatNumberAsCurrency(valor as number), percentual]);
+        distribuicaoData.push([tipo, formatNumberAsCurrency(valor), percentual]);
     }
 
-    distribuicaoData.push(['**TOTAL GERAL RECEBIDO**', formatNumberAsCurrency(totalPago), '100.0%']);
+    distribuicaoData.push([
+        'TOTAL GERAL RECEBIDO',
+        formatNumberAsCurrency(totalPago),
+        '100.0%'
+    ]);
 
-    (doc as any).autoTable({
+    autoTable(doc, {
         startY: y,
         head: [['Forma de Pagamento', 'Valor Recebido', 'Percentual']],
         body: distribuicaoData,
@@ -142,46 +140,50 @@ export const exportFinanceReportToPDF = ({ pedidos, mesFiltro }: ExportData) => 
         },
         columnStyles: { 1: { halign: 'right' }, 2: { halign: 'right' } },
         didParseCell: (data: any) => {
-            if (data.row.raw[0].includes('TOTAL GERAL')) {
+            const raw = data?.row?.raw;
+            let firstCell = '';
+            if (Array.isArray(raw)) firstCell = String(raw[0] ?? '');
+            else if (raw && (raw as HTMLTableRowElement).cells) firstCell = String(((raw as HTMLTableRowElement).cells[0]?.textContent) ?? '');
+            else firstCell = String((raw as any)?.[0] ?? '');
+            if (firstCell === 'TOTAL GERAL RECEBIDO') {
                 data.cell.styles.fontStyle = 'bold';
             }
         },
         didDrawCell: (data: any) => {
-            if (data.row.raw[0].includes('TOTAL GERAL')) {
-                doc.setFillColor(tableStyles.totalRowColor[0], tableStyles.totalRowColor[1], tableStyles.totalRowColor[2]);
+            const raw = data?.row?.raw;
+            let firstCell = '';
+            if (Array.isArray(raw)) firstCell = String(raw[0] ?? '');
+            else if (raw && (raw as HTMLTableRowElement).cells) firstCell = String(((raw as HTMLTableRowElement).cells[0]?.textContent) ?? '');
+            else firstCell = String((raw as any)?.[0] ?? '');
+            if (firstCell === 'TOTAL GERAL RECEBIDO') {
+                doc.setFillColor(...tableStyles.totalRowColor);
                 doc.rect(data.cell.x, data.cell.y, data.cell.width, data.cell.height, 'F');
             }
-        },
-        margin: { top: 5 }
+        }
     });
 
     y = (doc as any).lastAutoTable.finalY + 10;
 
     doc.setFontSize(14);
-    doc.setTextColor(tableStyles.textColor[0], tableStyles.textColor[1], tableStyles.textColor[2]); 
     doc.text(`Detalhe dos Recebimentos (${transacoesDetalhe.length} registros)`, 14, y);
     y += 7;
 
     const transacoesHeader = [['ID Pedido', 'Cliente', 'Data/Hora Pag.', 'Forma Pag.', 'Valor']];
+
     const transacoesBody = transacoesDetalhe.map(({ pedido, pagamento }) => {
-        const dataHoraObjeto = new Date(pagamento.dataRecebimento);
-
-        const formatarDataHora = (dateObj: Date) => {
-            const data = dateObj.toLocaleDateString('pt-BR');
-            const hora = dateObj.toLocaleTimeString('pt-BR').substring(0, 5); // Ex: 10:19
-            return `${data} ${hora}`;
-        };
-
+        const d = new Date(pagamento.dataRecebimento);
+        const data = d.toLocaleDateString('pt-BR');
+        const hora = d.toLocaleTimeString('pt-BR').substring(0, 5);
         return [
             pedido.uuid.substring(0, 8),
             pedido.clienteNome,
-            formatarDataHora(dataHoraObjeto),
+            `${data} ${hora}`,
             pagamento.forma,
             formatNumberAsCurrency(pagamento.valor)
         ];
     });
 
-    (doc as any).autoTable({
+    autoTable(doc, {
         startY: y,
         head: transacoesHeader,
         body: transacoesBody,

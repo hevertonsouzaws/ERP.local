@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router'; 
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Home from '@/pages/HomePage.vue';
 import ClientePage from '@/pages/ClientPage.vue';
 import PedidosPage from '@/pages/OrdersPage.vue';
@@ -7,21 +7,21 @@ import ServiceCatologPage from '@/pages/ServiceCatologPage.vue';
 import FinancesPage from '@/pages/FinancesPage.vue';
 import CreateOrderPage from '@/pages/CreateOrderPage.vue';
 import PedidoSelectorPage from '@/pages/PedidoSelectorPage.vue';
-import { useUserStore } from '@/shared/stores/user.store'; 
+import { useUserStore } from '@/shared/stores/user.store';
 import AuthLoginPage from '@/pages/AuthLoginPage.vue';
 import LogsPage from '@/pages/LogsPage.vue';
 import UserManagementPage from '@/pages/UserManagementPage.vue';
 
 const router = createRouter({
-  history: createWebHashHistory(), 
+  history: createWebHashHistory(),
   routes: [
     {
-      path: '/login', 
+      path: '/',
       name: 'login',
       component: AuthLoginPage,
     },
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       component: Home,
     },
@@ -74,17 +74,19 @@ const router = createRouter({
 });
 
 router.beforeEach((to) => {
-    const userStore = useUserStore();
-    const publicPages = ['/login']; 
-    const authRequired = !publicPages.includes(to.path);
+  const userStore = useUserStore();
+  const publicPages = ['/'];
+  const authRequired = !publicPages.includes(to.path);
 
-    if (authRequired && !userStore.isLoggedIn) {
-        return { name: 'login' };
-    }
+  if (authRequired && !userStore.isLoggedIn) {
+    return { name: 'login' };
+  }
 
-    if (userStore.isLoggedIn && to.name === 'login') {
-      return { name: 'home' };
-    }
+  if (userStore.isLoggedIn && to.name === 'login') {
+    return { name: 'home' };
+  }
+
+  return true;
 });
 
 export default router;
