@@ -2,9 +2,6 @@
 import MetricsBar from '@/shared/components/home-page/MetricsBar.vue';
 import CalendarView from '@/shared/components/home-page/CalendarVue.vue';
 import DailyOrdersSidebar from '@/shared/components/home-page/DailyOrdersSideBar.vue';
-import { ref } from 'vue';
-
-const isModalOpen = ref(false);
 </script>
 
 <template>

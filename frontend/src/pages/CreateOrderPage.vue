@@ -3,7 +3,7 @@ import ClientSelector from '@/shared/components/create-order/ClientSelector.vue'
 import ItemAdder from '@/shared/components/create-order/ItemAdder.vue';
 import PaymentForm from '@/shared/components/create-order/PaymentForm.vue';
 import DateSelector from '@/shared/components/create-order/DateSelector.vue';
-import DescountForm from '@/shared/components/create-order/DescountForm.vue';
+import { onMounted } from 'vue';
 import { useDraftOrderStore } from '@/shared/stores/draftOrder.store';
 import { useClientFormLogic } from '@/shared/helpers/create-order/clientFormLogic.helper';
 import { useItemManagementLogic } from '@/shared/helpers/create-order/itemManagementLogic.helper';
@@ -11,8 +11,9 @@ import { usePaymentFormLogic } from '@/shared/helpers/create-order/paymentFormLo
 import { useDateLogic } from '@/shared/helpers/create-order/dateLogic';
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { useServiceStore } from '@/shared/stores/catolog.store';
-import { useDiscountLogic } from '@/shared/helpers/create-order/discountLogic';
 import { showToast } from '@/shared/helpers/toastState';
+import router from '@/router';
+import { useClienteStore } from '@/shared/stores/cliente.store';
 
 const draftStore = useDraftOrderStore();
 const clientLogic = useClientFormLogic();
@@ -21,15 +22,19 @@ const paymentLogic = usePaymentFormLogic();
 const dateLogic = useDateLogic();
 const pedidoStore = usePedidoStore();
 const catalogStore = useServiceStore();
-const discountLogic = useDiscountLogic();
+const clienteStore = useClienteStore(); 
 
 catalogStore.loadCatalog();
+
+onMounted(() => {
+    clienteStore.carregarClientes();
+    draftStore.resetDraft();
+    clientLogic.resetClientState();
+})
 
 const resetFormulary = () => {
     draftStore.resetDraft();
     clientLogic.resetClientState();
-    // Adicione aqui as chamadas de reset para outros helpers (itemLogic, paymentLogic, dateLogic, discountLogic)
-    // assim que você os implementar. Ex: paymentLogic.resetPaymentState();
 };
 
 const finalizarPedido = async () => {
@@ -58,8 +63,9 @@ const finalizarPedido = async () => {
         const uuidSalvo = await pedidoStore.adicionarPedido(pedidoParaSalvar);
 
         if (uuidSalvo) {
-            showToast(`Pedido Criado com Sucesso! Status: ${pedidoParaSalvar.status}.`, 'success');
+            showToast(`Pedido Criado com Sucesso! Cliente: ${pedidoParaSalvar.clienteNome}.`, 'success');
             resetFormulary();
+            router.push({ name: 'home'})
         } else {
             showToast('Falha ao salvar o pedido. Tente novamente.', 'error');
         }
@@ -73,14 +79,6 @@ const finalizarPedido = async () => {
 
 <template>
     <div class="rounded-xl shadow-2xl w-full">
-
-        <div class="flex justify-between items-center border border-gray-500 p-5 rounded-lg">
-            <h2 class="text-2xl font-bold text-white flex items-center">
-                <i class="fi fi-rr-document-signed text-3xl mr-3 text-blue-400"></i>
-                Criar Novo Pedido
-            </h2>
-        </div>
-
         <div class="flex-1 overflow-y-auto pr-2 space-y-4 mt-5">
             <div class="grid grid-cols-12 gap-6">
 

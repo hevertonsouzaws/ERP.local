@@ -11,6 +11,7 @@ import { useUserStore } from '@/shared/stores/user.store';
 import AuthLoginPage from '@/pages/AuthLoginPage.vue';
 import LogsPage from '@/pages/LogsPage.vue';
 import UserManagementPage from '@/pages/UserManagementPage.vue';
+import CalendarPage from '@/pages/CalendarPage.vue';
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -64,6 +65,11 @@ const router = createRouter({
       path: '/log',
       name: 'log',
       component: LogsPage,
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: CalendarPage,
     },
     {
       path: '/users',
