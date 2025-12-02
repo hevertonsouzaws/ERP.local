@@ -58,14 +58,14 @@ const initials = computed(() => {
                     <router-link to="/home">
                         <i class="fi fi-rr-house-chimney"></i>
                     </router-link>
-                    <router-link to="/criarpedido">
-                        <i class="fi fi-rr-plus"></i>
+                    <router-link to="/pedidos">
+                        <i class="fi fi-rr-calendar-clock"></i>
+                    </router-link>
+                    <router-link to="/catalogo">
+                        <i class="fi fi-rr-list"></i>
                     </router-link>
                     <router-link to="/clientes">
                         <i class="fi fi-rr-user"></i>
-                    </router-link>
-                    <router-link to="/pedidos">
-                        <i class="fi fi-rr-calendar-clock"></i>
                     </router-link>
                 </div>
 
@@ -99,7 +99,7 @@ const initials = computed(() => {
                             <i class="fi fi-rr-dollar mr-3 text-base"></i> Finanças
                         </router-link>
 
-                        <hr class="my-1 border-gray-700">
+                        <hr class="my-1 border-gray-400">
 
                         <router-link to="/backup"
                             class="flex items-center px-4 py-2 text-sm text-white hover:bg-gray-700">

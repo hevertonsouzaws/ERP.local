@@ -1,5 +1,6 @@
 import type { Pedido } from '@/shared/types/order.type';
 import { formatCurrency } from '@/shared/helpers/currency.helper';
+import { formatarDataParaExibicao } from './data.helper';
 
 function calcularValorTotalPedido(pedido: Pedido): number {
     const subtotal = pedido.itens.reduce((totalPeca, peca) => {
@@ -18,9 +19,9 @@ function calcularValorTotalPedido(pedido: Pedido): number {
 
 export function generateWhatsAppComanda(pedido: Pedido): string {
     const nomeCliente = pedido.clienteNome;
-    const numeroPedido = pedido.uuid.substring(0, 8).toUpperCase();
 
-    const dataEntregaFormatada = new Date(pedido.dataEntrega).toLocaleDateString('pt-BR');
+    const dataCriacaoFormatada = formatarDataParaExibicao(pedido.dataCriacao);
+    const dataEntregaFormatada = formatarDataParaExibicao(pedido.dataEntrega);
     const horarioEntregaFormatado = pedido.horarioEntrega;
 
     const valorTotalLiquido = calcularValorTotalPedido(pedido);
@@ -33,8 +34,9 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
 
     const descontoValor = subtotalBruto * (pedido.descontoPorcentagem / 100);
 
-    let message = `*NS COSTURAS PEDIDO\n\n`;
+    let message = `*NS COSTURAS*\n\n`;
     message += `*CLIENTE:* ${nomeCliente}\n`;
+    message += `*EMISSÃO:* ${dataCriacaoFormatada}\n`;
     message += `*ENTREGA:* ${dataEntregaFormatada} ${horarioEntregaFormatado}\n`;
     message += `*STATUS:* ${pedido.status}\n`;
 
@@ -45,7 +47,7 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
         message += `${item.garmentName} (${item.lineNumber})\n`;
         item.servicos.forEach(servico => {
             const totalServico = servico.quantidade * servico.unitPrice;
-            message += `- ${servico.name} (${servico.quantidade}x): ${formatCurrency(totalServico)}\n`;
+            message += `${servico.quantidade}x ${servico.name} : ${formatCurrency(totalServico)}\n`;
         });
     });
 
@@ -64,8 +66,8 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
         message += `PAGAMENTO: *QUITADO*\n`;
     }
 
-    message += `\nAtenção  o prazo de retirada é de 30 dias, após a data de conclusão`;
-    message += `\nObrigado ${nomeCliente} volte sempre!`;
+    message += `\nAtenção: o prazo de retirada é de 30 dias`;
+    message += `\nObrigado ${nomeCliente}, volte sempre!`;
 
     return message;
 }

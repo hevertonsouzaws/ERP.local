@@ -3,6 +3,9 @@ import type { Pedido, PedidoStatus, PedidoItemPeca } from '@/shared/types/order.
 import { usePedidoStore } from '@/shared/stores/pedido.store';
 import { formatarDataParaExibicao, formatarTelefone } from '@/shared/helpers/data.helper';
 import { computed } from 'vue';
+// NOVO: Importa os helpers para copiar a comanda
+import { generateWhatsAppComanda } from '@/shared/helpers/orderComanda.helper';
+import { showToast } from '@/shared/helpers/toastState';
 
 const props = defineProps<{
     pedido: Pedido;
@@ -11,6 +14,8 @@ const props = defineProps<{
 const emit = defineEmits(['change-status', 'open-payment-modal', 'open-edit-modal']);
 
 const pedidoStore = usePedidoStore();
+
+// ... (Restante dos métodos e computed)
 
 const getStatusClass = (status: PedidoStatus) => {
     switch (status) {
@@ -43,6 +48,18 @@ const emitirAbrirEdicao = () => {
     emit('open-edit-modal', props.pedido);
 }
 
+// NOVO: Função para copiar a comanda
+const copyComandaToClipboard = async () => {
+    try {
+        const mensagemComanda = generateWhatsAppComanda(props.pedido);
+        await navigator.clipboard.writeText(mensagemComanda);
+        showToast('Comanda copiada! Pronto para colar no WhatsApp/Canva.', 'success');
+    } catch (err) {
+        console.error('Falha ao copiar texto:', err);
+        showToast('Erro ao copiar a comanda. Seu navegador pode estar bloqueando.', 'error');
+    }
+};
+
 const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
     const linhas: string[] = [];
     itens.forEach(peca => {
@@ -63,7 +80,7 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
 
 <template>
     <div
-        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 lg:w-[48%] 2xl:w-[32.3%] ">
+        class="w-full p-5 border border-gray-400 rounded-xl shadow-md transition duration-150 lg:w-[49%] 2xl:w-[32.3%] ">
         <div class="flex justify-between items-start border-b border-gray-600 pb-3 mb-3">
             <div class="flex items-center">
                 <i class="fi fi-rr-user text-white mr-2 text-xl"></i>
@@ -99,29 +116,37 @@ const formatarItensParaExibicao = (itens: PedidoItemPeca[]): string[] => {
             </p>
         </div>
 
-        <div class="pt-2 flex justify-end gap-2">
+        <div class="pt-2 flex flex-wrap justify-evenly  gap-2 lg:flex-nowrap">
+            
+            <button 
+                @click="copyComandaToClipboard"
+                title="Copiar comanda para WhatsApp/Canva"
+                class="py-1 px-3 rounded-lg text-xs transition duration-150 border border-gray-400 hover:bg-blue-600 hover:border-blue-600 text-white font-semibold flex items-center">
+                <i class="fi fi-rr-copy mr-1"></i> Copiar
+            </button>
+            
             <button 
                 v-if="pedido.status !== 'CANCELADO'"
                 @click="emitirAbrirPagamento"
-                class="py-1 px-3 rounded-lg text-sm transition duration-150 border border-gray-400 hover:bg-green-800 hover:border-green-800 text-white font-semibold flex items-center">
-                <i class="fi fi-rr-coins mr-1"></i> Pagar
+                class="py-1 px-3 rounded-lg text-xs transition duration-150 border border-gray-400 hover:bg-green-800 hover:border-green-800 text-white font-semibold flex items-center">
+                <i class="fi fi-rr-coins mr-1"></i> Receber
             </button>
 
             <button 
                 v-if="pedido.status !== 'CANCELADO' && pedido.status !== 'CONCLUIDO'" 
                 @click="emitirAbrirEdicao"
-                class="py-1 px-3 rounded-lg text-sm transition duration-150 border border-gray-400 hover:bg-blue-800 hover:border-blue-800 text-white font-semibold flex items-center">
+                class="py-1 px-3 rounded-lg text-xs transition duration-150 border border-gray-400 hover:bg-blue-800 hover:border-blue-800 text-white font-semibold flex items-center">
                 <i class="fi fi-rr-edit mr-1"></i> Editar
             </button>
 
             <button @click="emitirMudarStatus('PENDENTE')" :disabled="pedido.status === 'PENDENTE'"
-                class="py-1 px-3 rounded-lg text-sm transition duration-150"
+                class="py-1 px-3 rounded-lg text-xs transition duration-150"
                 :class="[pedido.status === 'PENDENTE' ? 'bg-gray-600 text-gray-200 cursor-not-allowed' : 'border border-gray-400 hover:border-yellow-800 hover:bg-yellow-800 text-white']">
-                <i class="fi fi-rr-clock mr-1"></i> REFAZER
+                <i class="fi fi-rr-clock mr-1"></i> Refazer
             </button>
 
             <button @click="emitirMudarStatus('CONCLUIDO')" :disabled="pedido.status === 'CONCLUIDO'"
-                class="py-1 px-3 rounded-lg text-sm transition duration-150"
+                class="py-1 px-3 rounded-lg text-xs transition duration-150"
                 :class="[pedido.status === 'CONCLUIDO' ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'border border-gray-400 hover:bg-green-800 hover:border-green-800 text-white']">
                 <i class="fi fi-rr-check-circle mr-1"></i> Concluir
             </button>

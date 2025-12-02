@@ -50,13 +50,32 @@ const sendComandaToGmailWeb = () => {
     const gmailLink = `https://mail.google.com/mail/u/0/?view=cm&fs=1&to=${email}&su=${assunto}&body=${corpoEmail}`;
     window.open(gmailLink, '_blank');
 };
+
+const copyComandaToClipboard = async () => {
+    try {
+        const mensagemComanda = generateWhatsAppComanda(props.pedido);
+        await navigator.clipboard.writeText(mensagemComanda);
+        showToast('Comanda copiada para a área de transferência!', 'success');
+    } catch (err) {
+        console.error('Falha ao copiar texto:', err);
+        showToast('Erro ao copiar a comanda. Tente novamente.', 'error');
+    }
+};
 </script>
 
 <template>
     <div class="bg-gray-900 border border-gray-500 p-6 rounded-lg shadow-xl space-y-4">
-        <h3 class="text-2xl font-bold text-white border-b border-gray-600 pb-3">
-            Comanda do Pedido #{{ pedido.uuid.substring(0, 8).toUpperCase() }}
-        </h3>
+        <div class="flex justify-between items-center border-b border-gray-600 pb-3">
+            <h3 class="text-2xl font-bold text-white">
+                Comanda do Pedido #{{ pedido.uuid.substring(0, 8).toUpperCase() }}
+            </h3>
+            
+            <button @click="copyComandaToClipboard"
+                class="p-2 bg-gray-700 rounded-lg text-white hover:bg-blue-600 transition"
+                title="Copiar texto da comanda para área de transferência">
+                <i class="fi fi-rr-copy text-xl"></i>
+            </button>
+        </div>
 
         <p class="text-gray-200">
             <span class="font-semibold text-gray-200">Cliente:</span> {{ pedido.clienteNome }} {{

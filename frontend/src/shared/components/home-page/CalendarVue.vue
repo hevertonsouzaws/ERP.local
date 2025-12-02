@@ -84,7 +84,7 @@ onMounted(() => {
         </div>
 
         <div class="flex mb-2">
-            <div v-for="dia in diasDaSemana" :key="dia" class="w-[14.28%] text-center text-sm text-gray-400 font-bold">
+            <div v-for="dia in diasDaSemana" :key="dia" class="w-[14.28%] text-center text-sm text-gray-200 font-semibold">
                 {{ dia }}
             </div>
         </div>
@@ -94,7 +94,7 @@ onMounted(() => {
 
             <div v-for="dia in diasDoMes" :key="dia" class="w-[14.28%] h-[80px] flex justify-center items-center p-0.5">
                 <button @click="selecionarDia(getDiaString(dia))" :class="[
-                    'w-full h-full border border-gray-600 flex flex-col justify-center items-center rounded-xl text-white font-medium transition duration-150 relative',
+                    'w-full h-full border border-gray-600 flex flex-col justify-center items-center rounded-xl text-white transition duration-150 relative',
                     { 'bg-blue-500 border-none text-white shadow-lg ring-2 ring-blue-500': isSelected(dia) },
                     { 'ring-2 ring-blue-500/50 bg-gray-700': isHoje(dia) && !isSelected(dia) },
                     { 'hover:bg-gray-700': !isSelected(dia) && !isHoje(dia) },

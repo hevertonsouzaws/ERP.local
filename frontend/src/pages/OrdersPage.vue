@@ -80,14 +80,15 @@ const handleEdicaoSucesso = () => {
 </script>
 
 <template>
-    <div class="min-h-screen text-white py-2 p-8 w-full">
+    <div class="min-h-screen text-white py-2 lg:p-2 w-full">
 
-        <div class="mb-6 flex justify-between items-center p-4 border border-gray-500 rounded-xl shadow-xl">
-            <p class="text-base font-semibold">Total de Pedidos: {{ store.pedidos.length }}</p>
+        <div class="mb-6 flex justify-between gap-4 items-center p-4 border border-gray-500 rounded-xl shadow-xl w-full flex-wrap lg:flex-nowrap">
+            <div class="w-full">
+                <p class="p-2 bg-gray-900 border border-gray-500 rounded-xl text-white w-full lg:w-48">Total de Pedidos: {{ store.pedidos.length }}</p>
+            </div>
 
-            <div class="flex items-center space-x-3">
-                <label class="text-gray-200">Filtrar por Status:</label>
-                <select v-model="filtroStatus" class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white">
+            <div class="w-full text-right">
+                <select v-model="filtroStatus" class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white w-full lg:w-48">
                     <option value="TODOS">Todos ({{ store.pedidos.length }})</option>
                     <option value="PENDENTE">Pendentes</option>
                     <option value="CONCLUIDO">Concluídos</option>

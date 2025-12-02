@@ -64,12 +64,12 @@ function closeGarmentModal() {
         </div>
 
         <div class="flex flex-col xl:flex-row gap-8 mt-10 rounded-lg">
-            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full">
+            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full max-h-fit">
                 <h3 class="text-xl text-center font-semibold mb-4 border-b border-gray-500 pb-2">Serviços de Costura</h3>
                 <ListService :services="catalogStore.services" @edit="openServiceModal" />
             </section>
 
-            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full">
+            <section class="p-4 rounded-lg shadow-md border border-gray-500 w-full max-h-fit">
                 <h3 class="text-xl text-center font-semibold mb-4 border-b border-gray-500 pb-2">Tipos de Peças</h3>
                 <ListGarmentType :garment-types="catalogStore.garmentTypes" @edit="openGarmentModal" />
             </section>
