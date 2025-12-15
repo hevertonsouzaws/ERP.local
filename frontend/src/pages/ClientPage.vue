@@ -57,7 +57,7 @@ const handleClienteAdicionado = () => {
 </script>
 
 <template>
-    <div class="min-h-screen text-white py-2 p-8 w-full">
+    <div class="min-h-screen text-white py-2 lg:p-8 w-full">
         <div
             class="mb-6 flex flex-col md:flex-row md:justify-between md:items-center p-4 border border-gray-500 rounded-xl shadow-xl">
             <h1 class="text-2xl font-semibold text-white mb-4 md:mb-0">Clientes Cadastrados</h1>

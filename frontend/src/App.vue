@@ -23,7 +23,7 @@ const isLoginPage = computed(() => route.name === 'login');
     <AppHeader v-if="!isLoginPage" />
     <Environment />
 
-    <section :class="{ 'w-full lg:max-w-[95%] text-white p-8 m-auto': !isLoginPage }">
+    <section :class="{ 'w-full lg:max-w-[95%] text-white p-2 lg:p-8 m-auto': !isLoginPage }">
       <router-view> </router-view>
       <ToastNotification />
     </section>

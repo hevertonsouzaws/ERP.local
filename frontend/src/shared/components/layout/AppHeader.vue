@@ -54,18 +54,18 @@ const initials = computed(() => {
                     <p class="font-allura-custom font-semibold text-3xl">NS</p>
                 </router-link>
 
-                <div class="text-xl flex gap-8 items-center">
+                <div class="text-base flex gap-8 items-center">
                     <router-link to="/home">
-                        <i class="fi fi-rr-house-chimney"></i>
+                        <p>INICIO</p>
                     </router-link>
                     <router-link to="/pedidos">
-                        <i class="fi fi-rr-calendar-clock"></i>
+                        <p>PEDIDOS</p>
                     </router-link>
                     <router-link to="/catalogo">
-                        <i class="fi fi-rr-list"></i>
+                        <p>SERVIÇOS</p>
                     </router-link>
                     <router-link to="/clientes">
-                        <i class="fi fi-rr-user"></i>
+                        <p>CLIENTES</p>
                     </router-link>
                 </div>
 
