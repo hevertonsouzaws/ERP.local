@@ -1,122 +1,182 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
-import { usePedidoStore } from '@/shared/stores/pedido.store';
-import type { Pedido, PedidoStatus } from '@/shared/types/order.type';
-import { showToast } from '@/shared/helpers/toastState';
-import ReceberPagamentoModal from '@/shared/components/orders-page/AddPaymentModal.vue';
-import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue';
-import PedidoCard from '@/shared/components/orders-page/OrderCard.vue';
+import { onMounted, ref, computed, nextTick } from 'vue'
+import { usePedidoStore } from '@/shared/stores/pedido.store'
+import type { Pedido, PedidoStatus } from '@/shared/types/order.type'
+import { showToast } from '@/shared/helpers/toastState'
+import ReceberPagamentoModal from '@/shared/components/orders-page/AddPaymentModal.vue'
+import EditOrderModal from '@/shared/components/orders-page/EditOrderModal.vue'
+import PedidoCard from '@/shared/components/orders-page/OrderCard.vue'
+import { useRoute } from 'vue-router';
 
-const store = usePedidoStore();
-const filtroStatus = ref<PedidoStatus | 'TODOS'>('TODOS');
+const store = usePedidoStore()
+const route = useRoute();
+const filtroStatus = ref<PedidoStatus | 'TODOS'>('TODOS')
+const pesquisaCliente = ref('')
 
-const pedidoSelecionado = ref<Pedido | null>(null);
-const mostrarModalPagamento = ref(false);
+const pedidoSelecionado = ref<Pedido | null>(null)
+const mostrarModalPagamento = ref(false)
 
-const pedidoParaEditar = ref<Pedido | null>(null);
-const mostrarModalEdicao = ref(false);
+const pedidoParaEditar = ref<Pedido | null>(null)
+const mostrarModalEdicao = ref(false)
 
-onMounted(() => {
+onMounted(async () => {
     if (!store.carregando) {
-        store.carregarPedidos();
+        await store.carregarPedidos();
+    }
+
+    await nextTick();
+
+    const uuid = route.query.pedido as string;
+
+    if (!uuid) return;
+
+    const elemento = document.getElementById(`pedido-${uuid}`);
+
+    if (elemento) {
+        elemento.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
     }
 });
 
 const pedidosFiltrados = computed(() => {
-    let list = store.pedidos.slice();
+  let list = store.pedidos.slice()
 
-    if (filtroStatus.value !== 'TODOS') {
-        list = list.filter(p => p.status === filtroStatus.value);
-    }
+  if (filtroStatus.value !== 'TODOS') {
+    list = list.filter((p) => p.status === filtroStatus.value)
+  }
 
-    return list.sort((a, b) => a.dataEntrega.localeCompare(b.dataEntrega));
-});
+  if (pesquisaCliente.value.trim() !== '') {
+    const termo = pesquisaCliente.value.trim().toLowerCase()
+
+    list = list.filter((p) => p.clienteNome.toLowerCase().includes(termo))
+  }
+
+  return list.sort((a, b) => a.dataEntrega.localeCompare(b.dataEntrega))
+})
 
 const mudarStatus = async (pedido: Pedido, novoStatus: PedidoStatus, valorTotal: number) => {
-    if (pedido.status === novoStatus) return;
+  if (pedido.status === novoStatus) return
 
-    const valorRestante = valorTotal - pedido.valorPago;
+  const valorRestante = valorTotal - pedido.valorPago
 
-    if (novoStatus === 'CONCLUIDO' && valorRestante > 0) {
-        showToast(`Atenção! O pedido ${pedido.uuid.substring(0, 8)} tem R$ ${valorRestante.toFixed(2)} pendentes. Concluindo...`, 'warning');
-    }
+  if (novoStatus === 'CONCLUIDO' && valorRestante > 0) {
+    showToast(
+      `Atenção! O pedido ${pedido.uuid.substring(0, 8)} tem R$ ${valorRestante.toFixed(2)} pendentes. Concluindo...`,
+      'warning',
+    )
+  }
 
-    try {
-        await store.atualizarStatusPedido(pedido.uuid, novoStatus);
-        showToast(`Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`, 'success');
-    } catch (error) {
-        console.error('Erro ao atualizar status:', error);
-        showToast('Erro ao atualizar status do pedido. Verifique o console.', 'error');
-    }
+  try {
+    await store.atualizarStatusPedido(pedido.uuid, novoStatus)
+    showToast(
+      `Status do Pedido ${pedido.uuid.substring(0, 8)} alterado para ${novoStatus}!`,
+      'success',
+    )
+  } catch (error) {
+    console.error('Erro ao atualizar status:', error)
+    showToast('Erro ao atualizar status do pedido. Verifique o console.', 'error')
+  }
 }
 
 const abrirModalPagamento = (pedido: Pedido) => {
-    pedidoSelecionado.value = pedido;
-    mostrarModalPagamento.value = true;
-};
+  pedidoSelecionado.value = pedido
+  mostrarModalPagamento.value = true
+}
 
 const fecharModalPagamento = () => {
-    mostrarModalPagamento.value = false;
-    pedidoSelecionado.value = null;
-};
+  mostrarModalPagamento.value = false
+  pedidoSelecionado.value = null
+}
 
 const handlePagamentoSucesso = () => {
-    fecharModalPagamento();
-};
+  fecharModalPagamento()
+}
 
 const abrirModalEdicao = (pedido: Pedido) => {
-    pedidoParaEditar.value = pedido;
-    mostrarModalEdicao.value = true;
-};
+  pedidoParaEditar.value = pedido
+  mostrarModalEdicao.value = true
+}
 
 const fecharModalEdicao = () => {
-    mostrarModalEdicao.value = false;
-    pedidoParaEditar.value = null;
-};
+  mostrarModalEdicao.value = false
+  pedidoParaEditar.value = null
+}
 
 const handleEdicaoSucesso = () => {
-    fecharModalEdicao();
-};
+  fecharModalEdicao()
+}
 </script>
 
 <template>
-    <div class="min-h-screen text-white py-2 lg:p-2 w-full">
+  <div class="min-h-screen text-white py-2 lg:p-2 w-full">
+    <div
+      class="mb-6 flex justify-between gap-4 items-center p-4 border border-gray-500 rounded-xl shadow-xl w-full flex-wrap lg:flex-nowrap"
+    >
+      <div class="w-full">
+        <p class="p-2 bg-gray-900 border border-gray-500 rounded-xl text-white w-full lg:w-48">
+          Total de Pedidos: {{ store.pedidos.length }}
+        </p>
+      </div>
 
-        <div class="mb-6 flex justify-between gap-4 items-center p-4 border border-gray-500 rounded-xl shadow-xl w-full flex-wrap lg:flex-nowrap">
-            <div class="w-full">
-                <p class="p-2 bg-gray-900 border border-gray-500 rounded-xl text-white w-full lg:w-48">Total de Pedidos: {{ store.pedidos.length }}</p>
-            </div>
+      <div class="w-full">
 
-            <div class="w-full text-right">
-                <select v-model="filtroStatus" class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white w-full lg:w-48">
-                    <option value="TODOS">Todos ({{ store.pedidos.length }})</option>
-                    <option value="PENDENTE">Pendentes</option>
-                    <option value="CONCLUIDO">Concluídos</option>
-                    <option value="CANCELADO">Cancelados</option>
-                </select>
-            </div>
-        </div>
+    <input
+        v-model="pesquisaCliente"
+        type="text"
+        placeholder="Pesquisar cliente..."
+        class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white w-full"
+    />
+</div>
 
-        <div class="rounded-xl shadow-2xl">
-            <div class="flex flex-row justify-left flex-wrap gap-5">
-                <PedidoCard v-for="pedido in pedidosFiltrados" :key="pedido.uuid" :pedido="pedido"
-                    @change-status="mudarStatus" @open-payment-modal="abrirModalPagamento"
-                    @open-edit-modal="abrirModalEdicao" />
-            </div>
-        </div>
-
-        <ReceberPagamentoModal v-if="mostrarModalPagamento && pedidoSelecionado" :pedido="pedidoSelecionado"
-            @close="fecharModalPagamento" @payment-success="handlePagamentoSucesso" />
-
-        <EditOrderModal v-if="mostrarModalEdicao && pedidoParaEditar" :pedido="pedidoParaEditar"
-            @close="fecharModalEdicao" @edit-success="handleEdicaoSucesso" />
-
-        <router-link to="criarpedido">
-            <button
-                class="fixed bottom-10 right-10 w-20 h-20 bg-blue-950 border-2 border-blue-500  rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-800 hover:scale-105 z-20">
-                <i class="fi fi-rr-plus"></i>
-            </button>
-        </router-link>
-
+      <div class="w-full text-right">
+        <select
+          v-model="filtroStatus"
+          class="p-2 bg-gray-900 border border-gray-200 rounded-xl text-white w-full lg:w-48"
+        >
+          <option value="TODOS">Todos ({{ store.pedidos.length }})</option>
+          <option value="PENDENTE">Pendentes</option>
+          <option value="CONCLUIDO">Concluídos</option>
+          <option value="CANCELADO">Cancelados</option>
+        </select>
+      </div>
     </div>
+
+    <div class="rounded-xl shadow-2xl">
+      <div class="flex flex-row justify-left flex-wrap gap-5">
+        <PedidoCard
+  v-for="pedido in pedidosFiltrados"
+  :key="pedido.uuid"
+  :id="`pedido-${pedido.uuid}`"
+  :pedido="pedido"
+  @change-status="mudarStatus"
+  @open-payment-modal="abrirModalPagamento"
+  @open-edit-modal="abrirModalEdicao"
+/>
+      </div>
+    </div>
+
+    <ReceberPagamentoModal
+      v-if="mostrarModalPagamento && pedidoSelecionado"
+      :pedido="pedidoSelecionado"
+      @close="fecharModalPagamento"
+      @payment-success="handlePagamentoSucesso"
+    />
+
+    <EditOrderModal
+      v-if="mostrarModalEdicao && pedidoParaEditar"
+      :pedido="pedidoParaEditar"
+      @close="fecharModalEdicao"
+      @edit-success="handleEdicaoSucesso"
+    />
+
+    <router-link to="criarpedido">
+      <button
+        class="fixed bottom-10 right-10 w-20 h-20 bg-blue-950 border-2 border-blue-500 rounded-full shadow-2xl flex items-center justify-center text-white text-3xl transition duration-300 hover:bg-blue-800 hover:scale-105 z-20"
+      >
+        <i class="fi fi-rr-plus"></i>
+      </button>
+    </router-link>
+  </div>
 </template>

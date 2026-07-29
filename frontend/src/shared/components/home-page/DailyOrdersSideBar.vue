@@ -29,29 +29,51 @@ const getStatusClass = (status: PedidoStatus) => {
         </p>
 
         <div v-else>
-            <router-link to="/pedidos" class="space-y-2">
-                <div v-for="pedido in pedidoStore.pedidosFiltrados" :key="pedido.uuid"
-                    class="p-4 border border-gray-400 rounded-lg shadow-md transition duration-150 hover:bg-gray-800 h-[100px]">
-                    <div class="flex justify-between items-start mb-2">
-                        <p class="font-semibold text-base text-gray-200">{{ pedido.clienteNome }}</p>
-                        <span
-                            :class="['text-xs font-semibold py-1 px-3 rounded-full uppercase', getStatusClass(pedido.status)]">
-                            {{ pedido.status }}
-                        </span>
-                    </div>
-                    <div class="flex gap-2">
-                        <p class="text-sm text-gray-200"><span class="font-medium">Emissão:</span> {{
-                            formatarDataParaExibicao(pedido.dataCriacao) }}
-                        </p>
-                        <p v-if="pedido.horarioEntrega" class="text-sm text-white"><span class="font-medium">Horário:</span> {{
-                            pedido.horarioEntrega }}
-                        </p>
-                        <p class="text-sm text-white"><span class="font-medium">Valor:</span> {{
-                            formatCurrency(pedidoStore.calcularValorTotalPedido(pedido)) }}
-                        </p>
-                    </div>
+            <div class="space-y-2">
+        <router-link
+            v-for="pedido in pedidoStore.pedidosFiltrados"
+            :key="pedido.uuid"
+            :to="{
+                path: '/pedidos',
+                query: { pedido: pedido.uuid }
+            }"
+        >
+            <div
+                class="p-4 border border-gray-400 rounded-lg shadow-md transition duration-150 hover:bg-gray-800 h-[100px] mt-2">
+
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-semibold text-base text-gray-200">
+                        {{ pedido.clienteNome }}
+                    </p>
+
+                    <span
+                        :class="['text-xs font-semibold py-1 px-3 rounded-full uppercase', getStatusClass(pedido.status)]">
+                        {{ pedido.status }}
+                    </span>
                 </div>
-            </router-link>
+
+                <div class="flex gap-2">
+                    <p class="text-sm text-gray-200">
+                        <span class="font-medium">Emissão:</span>
+                        {{ formatarDataParaExibicao(pedido.dataCriacao) }}
+                    </p>
+
+                    <p
+                        v-if="pedido.horarioEntrega"
+                        class="text-sm text-white">
+                        <span class="font-medium">Horário:</span>
+                        {{ pedido.horarioEntrega }}
+                    </p>
+
+                    <p class="text-sm text-white">
+                        <span class="font-medium">Valor:</span>
+                        {{ formatCurrency(pedidoStore.calcularValorTotalPedido(pedido)) }}
+                    </p>
+                </div>
+
+            </div>
+        </router-link>
+    </div>
         </div>
     </div>
 </template>
