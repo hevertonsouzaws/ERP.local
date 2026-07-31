@@ -35,12 +35,11 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
     const descontoValor = subtotalBruto * (pedido.descontoPorcentagem / 100);
 
     let message = `*NS COSTURAS*\n\n`;
-    message += `*CLIENTE:* ${nomeCliente}\n`;
-    message += `*EMISSÃO:* ${dataCriacaoFormatada}\n`;
-    message += `*ENTREGA:* ${dataEntregaFormatada} ${horarioEntregaFormatado}\n`;
-    message += `*STATUS:* ${pedido.status}\n`;
+    message += `${nomeCliente}\n`;
+    message += `EMISSÃO: ${dataCriacaoFormatada}\n`;
+    message += `ENTREGA: ${dataEntregaFormatada} ${horarioEntregaFormatado}\n`;
 
-    message += `*PEÇAS (${pedido.itens.length}):*\n`;
+    message += `PEÇAS (${pedido.itens.length}):\n`;
     message += '\n'
 
     pedido.itens.forEach((item, index) => {
@@ -56,7 +55,7 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
     if (pedido.descontoPorcentagem > 0) {
         message += `DESCONTO (${pedido.descontoPorcentagem}%): -${formatCurrency(descontoValor)}\n`;
     }
-    message += `*TOTAL DO PEDIDO:* *${formatCurrency(valorTotalLiquido)}*\n`;
+    message += `*VALOR TOTAL:* *${formatCurrency(valorTotalLiquido)}*\n`;
     message += `TOTAL PAGO: ${formatCurrency(pedido.valorPago)}\n`;
 
     const restante = valorTotalLiquido - pedido.valorPago;
@@ -66,8 +65,6 @@ export function generateWhatsAppComanda(pedido: Pedido): string {
         message += `PAGAMENTO: *QUITADO*\n`;
     }
 
-    message += `\nAtenção: o prazo de retirada é de 30 dias`;
-    message += `\nObrigado ${nomeCliente}, volte sempre!`;
 
     return message;
 }
